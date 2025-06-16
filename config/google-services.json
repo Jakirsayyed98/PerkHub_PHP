@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "406967065931",
+    "project_id": "perkhub-319e4",
+    "storage_bucket": "perkhub-319e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406967065931:android:784ff7e85961eaeda3dcce",
+        "android_client_info": {
+          "package_name": "app.perkhub.perkhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXQmsv52fYsKAOw8hfWUuTNu5g9U66I-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
