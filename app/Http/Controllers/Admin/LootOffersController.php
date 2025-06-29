@@ -12,7 +12,7 @@ class LootOffersController extends Controller
     //
     function lootOfferList(Request $req)  {
         
-        // $records = lootoffers::all();
+        $records = lootoffers::all();
         $miniAppList = MiniAppData::all();
         return view('adminpanel/lootoffers/lootoffers',['records'=>$records, 'miniAppList'=>$miniAppList]);
     }

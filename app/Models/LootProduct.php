@@ -22,6 +22,7 @@ class LootProduct extends Model
         'discount_percentage',
         'product_url',
         'coupon_code',
+        'offer_expiry',
     ];
 
     /**
@@ -68,6 +69,7 @@ class LootProduct extends Model
      */
     public static function addOrUpdateProduct($data)
     {
+        
         $product = self::updateOrCreate(
             ['id' => $data['id'] ?? null], // Use 'id' if it exists, otherwise create a new record
             [
@@ -80,9 +82,10 @@ class LootProduct extends Model
                 'discount_percentage' => $data['discount_percentage'],
                 'product_url' => $data['product_url'],
                 'coupon_code' => $data['coupon_code'],
+                'offer_expiry' => $data['offer_expiry'],
             ]
         );
-
-        return $product;
+        
+       return $product;
     }
 }

@@ -84,7 +84,8 @@
 
                                 <div class="form-group">
                                     <label>Offer Expiry Date</label>
-                                    <input type="date" name="offer_expiry" class="form-control" value="{{ old('offer_expiry', isset($records->offer_expiry) ? $records->offer_expiry->format('Y-m-d') : '') }}">
+                                    <input type="date" name="offer_expiry" class="form-control" value="{{ old('offer_expiry', isset($records->offer_expiry) ? $records->offer_expiry : '') }}">
+                                    <!-- <input type="date" name="offer_expiry" class="form-control" value="{{ old('offer_expiry', isset($records->offer_expiry) ? $records->offer_expiry->format('Y-m-d') : '') }}"> -->
                                 </div>
                             </div>
 
