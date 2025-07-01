@@ -22,6 +22,9 @@ class LootProductController extends Controller
     public function LootProductAddOrUpdate(Request $req)
     {
         $product = (new LootProduct)->getProductById($req->id); // Assuming you have a method to fetch product by ID
+        if (!$product) {
+            $product = new LootProduct(); // Create a new instance if no product found
+        }
         return view('adminpanel/LootProducts/lootProductForm',['records'=>$product]);
     }
 

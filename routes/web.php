@@ -129,9 +129,9 @@ Route::post('AddOrUpdateGameCategoriesProcess',[GamesController::class,'AddOrUpd
 
 
 
-Route::get('lootProductList',[LootProductController::class,'lootProductList']);
+Route::get('lootProductList',[LootProductController::class,'lootProductList'])->name('LootProductList');
 Route::get('AddOrUpdateLootProduct',[LootProductController::class,'LootProductAddOrUpdate']);
-Route::post('AddOrUpdateLootProductProcess',[LootProductController::class,'LootProductAddOrUpdate']);
+Route::post('AddOrUpdateLootProductProcess',[LootProductController::class,'LootProductAddOrUpdateProcess']);
 
 
 

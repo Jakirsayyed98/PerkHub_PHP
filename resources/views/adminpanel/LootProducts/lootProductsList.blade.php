@@ -58,7 +58,7 @@
             <tr>
                 <th  scope="row">{{$item->id}}</th>
 
-                <td style="width:200px">{{$item->name}}</td>
+                <td style="width:200px">{{$item->product_name}}</td>
 
                 <td>
                 <img src="{{ $item->image_url }}" width="90px"
