@@ -9,8 +9,10 @@ use AsyncAws\Core\Exception\Http\NetworkException;
 use AsyncAws\Core\Test\Http\SimpleMockedResponse;
 use AsyncAws\Core\Test\ResultMockFactory;
 use AsyncAws\S3\Result\HeadObjectOutput;
+use AsyncAws\S3\Result\ListObjectsV2Output;
 use AsyncAws\S3\Result\PutObjectOutput;
 use AsyncAws\S3\S3Client;
+use AsyncAws\S3\ValueObject\AwsObject;
 use AsyncAws\SimpleS3\SimpleS3Client;
 use Exception;
 use League\Flysystem\AdapterTestUtilities\FilesystemAdapterTestCase;
@@ -21,6 +23,7 @@ use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\StorageAttributes;
 use League\Flysystem\UnableToCheckFileExistence;
+use League\Flysystem\UnableToDeleteDirectory;
 use League\Flysystem\UnableToDeleteFile;
 use League\Flysystem\UnableToListContents;
 use League\Flysystem\UnableToMoveFile;
@@ -208,6 +211,60 @@ class AsyncAwsS3AdapterTest extends FilesystemAdapterTestCase
     /**
      * @test
      */
+    public function delete_directory_replaces_special_characters_by_xml_entity_codes(): void
+    {
+        $this->runScenario(function () {
+            $directory = 'to-delete';
+            $object = sprintf('/%s/\'\"&<>.txt', $directory);
+
+            $adapter = $this->adapter();
+            $adapter->write(
+                $object,
+                '',
+                new Config()
+            );
+
+            $adapter->deleteDirectory($directory);
+
+            $this->assertFalse($adapter->fileExists($object));
+            $this->assertFalse($adapter->directoryExists($directory));
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function delete_directory_throws_exception_if_object_key_can_not_be_escaped_correctly(): void
+    {
+        $listObjectsMock = $this->getMockBuilder(ListObjectsV2Output::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getContents'])
+            ->getMock();
+
+        $listObjectsMock->expects(self::once())
+            ->method('getContents')
+            ->willReturn([new AwsObject(['Key' => "\x8F.txt"])]);
+
+        $s3Client = $this->getMockBuilder(S3Client::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['ListObjectsV2'])
+            ->getMock();
+
+        $s3Client->expects(self::once())
+            ->method('ListObjectsV2')
+            ->willReturn($listObjectsMock);
+
+        $filesystem = new AsyncAwsS3Adapter($s3Client, 'my-bucket');
+
+        $this->expectException(UnableToDeleteDirectory::class);
+        $this->expectExceptionMessageMatches('/htmlentities\(\) returned an empty string/');
+
+        $filesystem->deleteDirectory('directory/containing/objects/with/un-escapable/key');
+    }
+
+    /**
+     * @test
+     */
     public function fetching_unknown_mime_type_of_a_file(): void
     {
         $this->adapter();
@@ -383,6 +440,27 @@ class AsyncAwsS3AdapterTest extends FilesystemAdapterTestCase
             $this->assertTrue($adapter->fileExists('destination.txt'));
             $this->assertEquals(Visibility::PRIVATE, $adapter->visibility('destination.txt')->visibility());
             $this->assertEquals('contents to be copied', $adapter->read('destination.txt'));
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function copying_a_file_with_non_ascii_characters(): void
+    {
+        $this->runScenario(function () {
+            $adapter = $this->adapter();
+            $adapter->write(
+                'ıÇöü🤔.txt',
+                'contents to be copied',
+                new Config()
+            );
+
+            $adapter->copy('ıÇöü🤔.txt', 'ıÇöü🤔_copy.txt', new Config());
+
+            $this->assertTrue($adapter->fileExists('ıÇöü🤔.txt'));
+            $this->assertTrue($adapter->fileExists('ıÇöü🤔_copy.txt'));
+            $this->assertEquals('contents to be copied', $adapter->read('ıÇöü🤔_copy.txt'));
         });
     }
 
