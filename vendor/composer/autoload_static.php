@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947
+class ComposerStaticInitf22113d5de9fa42b16d6b9e105a72ee5
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -473,8 +473,8 @@ class ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947
         ),
         'Fruitcake\\Cors\\' => 
         array (
-            0 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
-            1 => __DIR__ . '/..' . '/fruitcake/laravel-cors/src',
+            0 => __DIR__ . '/..' . '/fruitcake/laravel-cors/src',
+            1 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
         ),
         'Firebase\\JWT\\' => 
         array (
@@ -558,6 +558,7 @@ class ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947
         'App\\Http\\Controllers\\APIs\\UserAuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/APIs/UserAuthController.php',
         'App\\Http\\Controllers\\APIs\\WithdrawalController' => __DIR__ . '/../..' . '/app/Http/Controllers/APIs/WithdrawalController.php',
         'App\\Http\\Controllers\\Admin\\AdminHomePageController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AdminHomePageController.php',
+        'App\\Http\\Controllers\\Admin\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/AuthController.php',
         'App\\Http\\Controllers\\Admin\\BannerController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/BannerController.php',
         'App\\Http\\Controllers\\Admin\\CommisionSettingController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/CommisionSettingController.php',
         'App\\Http\\Controllers\\Admin\\CueLinkController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/CueLinkController.php',
@@ -574,6 +575,7 @@ class ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\AdminAuthMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/AdminAuthMiddleware.php',
+        'App\\Http\\Middleware\\AdminTokenMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/AdminTokenMiddleware.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\PreventRequestsDuringMaintenance' => __DIR__ . '/../..' . '/app/Http/Middleware/PreventRequestsDuringMaintenance.php',
@@ -2784,6 +2786,7 @@ class ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947
         'Laravel\\Sanctum\\Guard' => __DIR__ . '/..' . '/laravel/sanctum/src/Guard.php',
         'Laravel\\Sanctum\\HasApiTokens' => __DIR__ . '/..' . '/laravel/sanctum/src/HasApiTokens.php',
         'Laravel\\Sanctum\\Http\\Controllers\\CsrfCookieController' => __DIR__ . '/..' . '/laravel/sanctum/src/Http/Controllers/CsrfCookieController.php',
+        'Laravel\\Sanctum\\Http\\Middleware\\AuthenticateSession' => __DIR__ . '/..' . '/laravel/sanctum/src/Http/Middleware/AuthenticateSession.php',
         'Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities' => __DIR__ . '/..' . '/laravel/sanctum/src/Http/Middleware/CheckAbilities.php',
         'Laravel\\Sanctum\\Http\\Middleware\\CheckForAnyAbility' => __DIR__ . '/..' . '/laravel/sanctum/src/Http/Middleware/CheckForAnyAbility.php',
         'Laravel\\Sanctum\\Http\\Middleware\\CheckForAnyScope' => __DIR__ . '/..' . '/laravel/sanctum/src/Http/Middleware/CheckForAnyScope.php',
@@ -5590,6 +5593,7 @@ class ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947
         'Symfony\\Component\\HttpKernel\\Fragment\\RoutableFragmentRenderer' => __DIR__ . '/..' . '/symfony/http-kernel/Fragment/RoutableFragmentRenderer.php',
         'Symfony\\Component\\HttpKernel\\Fragment\\SsiFragmentRenderer' => __DIR__ . '/..' . '/symfony/http-kernel/Fragment/SsiFragmentRenderer.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\AbstractSurrogate' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/AbstractSurrogate.php',
+        'Symfony\\Component\\HttpKernel\\HttpCache\\CacheWasLockedException' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/CacheWasLockedException.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\Esi' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/Esi.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\HttpCache' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/HttpCache.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\ResponseCacheStrategy' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/ResponseCacheStrategy.php',
@@ -6231,9 +6235,9 @@ class ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitb21c85e7c2cf2e6f7d887e5f2354c947::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitf22113d5de9fa42b16d6b9e105a72ee5::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitf22113d5de9fa42b16d6b9e105a72ee5::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitf22113d5de9fa42b16d6b9e105a72ee5::$classMap;
 
         }, null, ClassLoader::class);
     }

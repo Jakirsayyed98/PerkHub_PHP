@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('affiliate_transaction', function (Blueprint $table) {
-            //
-            $table->string('update_status')->nullable();
+        Schema::create('personal_access_token', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
         });
     }
 
@@ -26,8 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('affiliate_transaction', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('personal_access_token');
     }
 };
