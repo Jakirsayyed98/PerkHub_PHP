@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class subid_data extends Model
 {
     use HasFactory;
-    public $table = 'miniappsubiddata';
+    public $table = 'miniapp_sub_id';
     protected $fillable = [
         'user_id',
         'brand_name',

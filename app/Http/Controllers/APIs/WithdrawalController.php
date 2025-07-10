@@ -4,7 +4,7 @@ namespace App\Http\Controllers\APIs;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\withdrawal_request_model;
+use App\Models\WithdrawalRequest;
 use App\Models\UserModel;
 use Validator;
 
@@ -17,7 +17,7 @@ class WithdrawalController extends Controller
         $user = UserModel::where('user_id',$user_id)->get();
         
         if($user->count()>0){
-        $withdrawal_request_model =new withdrawal_request_model();
+        $withdrawal_request_model =new WithdrawalRequest();
         $withdrawal_request_model->type = '1';
         $withdrawal_request_model->status = '0';
         $withdrawal_request_model->user_id =$user_id;
@@ -36,18 +36,24 @@ class WithdrawalController extends Controller
     }
     
     
-    function withdrawalTxnList(Request $req){
+    function getWithdrawalTxnList(Request $req){
         $request = json_decode($req->getContent(), true);
         $user_id = $req->attributes->get('user_id');
-        $model1 = withdrawal_request_model::where('user_id',$user_id)->orderBy('created_at', 'desc')->get();
     
-        if($model1){
-            $response = $model1;
-            return $this->sendResponse('0',$response,'Successfully');
-        }else{
-            $response = [];
-            return $this->sendResponse('1',$response,'Error');
+        $user = UserModel::where('user_id',$user_id)->get();
+        
+        if($user->count()>0){
+            // Fetch withdrawal requests for the user
+            $withdrawal_request_model = new WithdrawalRequest();
+            // Use the method to get the withdrawal requests by user ID
+            $withdrawal_request_model = $withdrawal_request_model->getUserTxnListByUserId($user_id);
+            if($withdrawal_request_model->count()>0){
+                $response = $withdrawal_request_model;
+                return $this->sendResponse('0',$response,'Successfully');
+            }else{
+                $response = [];
+                return $this->sendResponse('1',$response,'No withdrawal requests found');
+            }
         }
-
     }
 }

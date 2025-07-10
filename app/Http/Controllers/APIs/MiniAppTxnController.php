@@ -34,22 +34,14 @@ class MiniAppTxnController extends Controller
     }
   
 
-    function getTxnList(Request $req){
+    function getMiniAppTransactionList(Request $req){
 
-        $validator = Validator::make($req->all(),[
-            'user_id'=>'required'
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendResponse('1',[],$validator->errors()->first());
-            
-        }
-
-
-        $user_id = $req->user_id;
-       
-
-        $model1 = affiliate_transaction::where('user_id',$user_id)->where('update_status','1')->orderBy('created_at', 'desc')->get();
+        $request = json_decode($req->getContent(), true);
+        $user_id = $req->attributes->get('user_id');
+        $user = UserModel::where('user_id',$user_id)->get();
+        
+        if($user->count()>0){
+$model1 = affiliate_transaction::where('user_id',$user_id)->orderBy('created_at', 'desc')->get();
     
 
         if($model1){
@@ -85,11 +77,12 @@ class MiniAppTxnController extends Controller
             $response = $model1;
             return $this->sendResponse('0',$response,'Successfully');
 
-        }else{
+        }
+        }
         
             $response = [];
             return $this->sendResponse('1',$response,'Error');
-        }
+        
 
     }
 }

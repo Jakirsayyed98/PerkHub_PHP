@@ -34,7 +34,10 @@ class WithdrawalRequest extends Model
         return self::where('status', $status)->get();
     }
 
-    
+    public function getUserTxnListByUserId($user_id)
+    {
+        return self::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+    }
 
     /**
      * Retrieve all withdrawal requests with a specific status.

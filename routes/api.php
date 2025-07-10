@@ -4,9 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\APIs\UserAuthController;
 use App\Http\Controllers\APIs\MiniAppTxnController;
+use App\Http\Controllers\APIs\WithdrawalController;
 use App\Http\Controllers\APIs\HomePageController;
 use App\Http\Controllers\APIs\AffiliateController;
 use App\Http\Controllers\APIs\NotificationController;
+
 
 
 /*
@@ -50,7 +52,7 @@ Route::middleware(['user_auth'])->group(function(){
 
 //User Transaction and Withdrawal Related APIs
 Route::middleware(['user_auth'])->group(function(){
-    Route::GET('/withdrawal/txnList','App\Http\Controllers\APIs\WithdrawalController@withdrawalTxnList');
+    Route::GET('/withdrawal/txnList',[WithdrawalController::class, 'getWithdrawalTxnList']);
     Route::post('/withdrawal/request','App\Http\Controllers\APIs\WithdrawalController@requestwithdrawal');
 });
 
@@ -78,9 +80,10 @@ Route::GET('/getNotificationList','App\Http\Controllers\APIs\NotificationControl
 
 // Home Page
 // Route::post('/getHomePage','App\Http\Controllers\APIs\HomePageController@getHomePage');
+Route::middleware(['user_auth'])->group(function(){
 Route::post('/UpdateTXN','App\Http\Controllers\APIs\MiniAppTxnController@UpdateTxnDetail');
-Route::post('/getTxnList','App\Http\Controllers\APIs\MiniAppTxnController@getTxnList');
-
+Route::post('/getTxnList',[MiniAppTxnController::class, 'getMiniAppTransactionList']);
+});
 
 
 //MiniApp Controls
