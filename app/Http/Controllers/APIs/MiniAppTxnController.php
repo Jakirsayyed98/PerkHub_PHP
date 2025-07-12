@@ -58,7 +58,7 @@ public function GenerateMiniAppSubId(Request $req) {
         return $this->sendResponse('1', [], 'User not found');
     }
 
-    $transactions =(new MiniAppTransaction)->getTransactionById($user_id);
+    $transactions =(new MiniAppTransaction)->GetMiniAppTransaction($user_id);
     if (!$transactions || $transactions->count() === 0) {
         return $this->sendResponse('1', [], 'No transactions found');
     }
