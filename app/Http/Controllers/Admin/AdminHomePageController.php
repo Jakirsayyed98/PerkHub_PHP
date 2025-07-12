@@ -7,7 +7,7 @@ use App\Models\UserModel;
 use App\Models\MiniAppCategoriesModel;
 use App\Models\MiniAppData;
 use App\Http\Controllers\Controller;
-use App\Models\affiliate_transaction;
+use App\Models\MiniAppTransaction;
 use App\Models\WithdrawalRequest;
 use App\Models\games_categories;
 use App\Models\games;
@@ -24,7 +24,7 @@ class AdminHomePageController extends Controller
         }    
         $miniapp = (new MiniAppData)->getAllMiniApps();
         $category = MiniAppCategoriesModel::all();
-        $transactions = affiliate_transaction::where('transaction_status','1')->get();
+        $transactions = MiniAppTransaction::all();
         $withdrawalRes = (new WithdrawalRequest)->getByStatus("0");
         $games = games::all();
         $GamesCate = games_categories::all();

@@ -53,7 +53,7 @@ Route::middleware(['user_auth'])->group(function(){
 //User Transaction and Withdrawal Related APIs
 Route::middleware(['user_auth'])->group(function(){
     Route::GET('/withdrawal/txnList',[WithdrawalController::class, 'getWithdrawalTxnList']);
-    Route::post('/withdrawal/request','App\Http\Controllers\APIs\WithdrawalController@requestwithdrawal');
+    Route::post('/withdrawal/request',[WithdrawalController::class,'requestwithdrawal']);
 });
 
 Route::post('/admin/cuelink-callback',[AffiliateController::class, 'CueLinkCallback']);
@@ -76,17 +76,11 @@ Route::middleware(['user_auth'])->group(function(){
 Route::GET('/getNotificationList','App\Http\Controllers\APIs\NotificationController@getNotificationList');
 });
 
-//Withdrawal 
-
-// Home Page
-// Route::post('/getHomePage','App\Http\Controllers\APIs\HomePageController@getHomePage');
+// MiniApp Transaction List
 Route::middleware(['user_auth'])->group(function(){
-Route::post('/UpdateTXN','App\Http\Controllers\APIs\MiniAppTxnController@UpdateTxnDetail');
 Route::post('/getTxnList',[MiniAppTxnController::class, 'getMiniAppTransactionList']);
 });
 
-
-//MiniApp Controls
 
 
 //Loot Offers

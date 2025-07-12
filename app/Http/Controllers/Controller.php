@@ -229,4 +229,18 @@ class Controller extends BaseController
     }
 
 
+    function generateRandomValue($length = 20) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    
+    for ($i = 0; $i < $length; $i++) {
+        $randomByte = ord(random_bytes(1));
+        $randomString .= $characters[$randomByte % $charactersLength];
+    }
+
+    return $randomString;
+}
+
+
 }
