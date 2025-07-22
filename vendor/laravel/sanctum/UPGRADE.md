@@ -14,7 +14,7 @@ The following dependency versions have been updated:
 Sanctum now supports expiring tokens. To support this feature, a new `expires_at` column must be added to your application's `personal_access_tokens` table. To add the column to your table, create a migration with the following schema change:
 
 ```php
-Schema::table('personal_access_tokens', function (Blueprint $table) {
-    $table->timestamp('expires_at')->nullable()->after('last_used_at');
-});
+// Schema::table('personal_access_tokens', function (Blueprint $table) {
+//     $table->timestamp('expires_at')->nullable()->after('last_used_at');
+// });
 ```

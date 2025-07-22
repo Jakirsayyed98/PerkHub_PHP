@@ -1,102 +1,69 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\APIs\UserAuthController;
-use App\Http\Controllers\APIs\MiniAppTxnController;
-use App\Http\Controllers\APIs\WithdrawalController;
-use App\Http\Controllers\APIs\HomePageController;
-use App\Http\Controllers\APIs\AffiliateController;
-use App\Http\Controllers\APIs\NotificationController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WalletController;
+use App\Http\Controllers\Api\StoreController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\CallbackController;
+use App\Http\Controllers\Api\SupportController;
+use App\Http\Controllers\Api\AdminController;
 
-
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Public Auth Routes
+Route::prefix('auth')->group(function () {
+    Route::post('/send-otp', [AuthController::class, 'sendOtp']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/token', [AuthController::class, 'issueToken']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 });
 
+// Protected Routes using JWT
+Route::middleware(['jwt.verify'])->group(function () {
+    // User Profile
+    Route::get('/user/profile', [AuthController::class, 'profile']);
+    Route::post('/user/update-profile', [UserController::class, 'updateProfile']);
+    Route::post('/user/logout', [AuthController::class, 'logout']);
 
+    // Wallet Summary + Transactions
+    Route::prefix('wallet')->group(function () {
+        Route::get('/summary', [WalletController::class, 'getWalletSummary']);
+        Route::get('/transactions', [WalletController::class, 'getTransactions']);
+        Route::post('/withdraw', [WalletController::class, 'withdraw']);
+        Route::get('/withdrawals', [WalletController::class, 'withdrawals']);
+    });
 
-// Login APIs
+    // Store APIs
+    Route::get('/stores', [StoreController::class, 'list']);
+    Route::get('/stores/{id}', [StoreController::class, 'detail']);
+    Route::get('/stores/{id}/track', [StoreController::class, 'trackStoreClick']);
 
-Route::post('/sendOTP','App\Http\Controllers\APIs\UserAuthController@sendOTPtoUser');
-Route::post('/authorization','App\Http\Controllers\APIs\UserAuthController@authorization');
-Route::post('/verifyOTP','App\Http\Controllers\APIs\UserAuthController@verifyOTP');
+    // Order APIs
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
 
-Route::middleware(['user_auth'])->group(function(){
-    Route::post('/savedetail','App\Http\Controllers\APIs\UserAuthController@saveUserdetail');
-    Route::post('/updateNotificationToken','App\Http\Controllers\APIs\UserAuthController@updateNotificationToken');
-    Route::get('/getUserDetail','App\Http\Controllers\APIs\UserAuthController@getUserDetails');
-    Route::get('/getHomePage','App\Http\Controllers\APIs\HomePageController@getHomePage');
+    // Support/Help Center
+    Route::prefix('support')->group(function () {
+        Route::post('/tickets', [SupportController::class, 'createTicket']);
+        Route::get('/tickets', [SupportController::class, 'listTickets']);
+        Route::get('/tickets/{id}', [SupportController::class, 'showTicket']);
+    });
 });
 
-
-//MiniApp Related APIs
-Route::middleware(['user_auth'])->group(function(){
-    Route::post('/generate-sub-id',[MiniAppTxnController::class, 'GenerateMiniAppSubId']);
-    Route::post('/searchMiniApps','App\Http\Controllers\APIs\MiniAppController@searchMiniApp');
-    Route::post('/getMiniAppByCategory','App\Http\Controllers\APIs\MiniAppController@getMiniAppByCategory');
+// Affiliate Callback Routes (Public, with secret/IP validation)
+Route::prefix('callback')->group(function () {
+    Route::post('/cuelinks', [CallbackController::class, 'handleCuelinks'])->middleware('callback.validate');
+    Route::get('/callback', [CallbackController::class, 'handle']);
 });
 
-
-//User Transaction and Withdrawal Related APIs
-Route::middleware(['user_auth'])->group(function(){
-    Route::GET('/withdrawal/txnList',[WithdrawalController::class, 'getWithdrawalTxnList']);
-    Route::post('/withdrawal/request',[WithdrawalController::class,'requestwithdrawal']);
+// Admin Panel Routes (Deferred for later)
+Route::middleware(['jwt.verify', 'admin'])->prefix('admin')->group(function () {
+    Route::apiResource('stores', AdminController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+    Route::put('/orders/{id}/review', [AdminController::class, 'reviewOrder']);
+    Route::get('/users', [AdminController::class, 'listUsers']);
+    Route::get('/users/{id}', [AdminController::class, 'showUser']);
+    Route::put('/wallet/withdrawals/{id}/review', [WalletController::class, 'reviewWithdrawal']);
 });
 
-Route::post('/admin/cuelink-callback',[AffiliateController::class, 'CueLinkCallback']);
-
-Route::post('/sendNotification',[NotificationController::class,'sendNotification']);
-
-
-
-//Games Related APIs
-Route::middleware(['user_auth'])->group(function(){
-    Route::GET('/getgames-categories','App\Http\Controllers\APIs\GamesController@getAllCategory');
-    Route::post('/getAllGames','App\Http\Controllers\APIs\GamesController@getAllGames');
-    Route::post('/search-game','App\Http\Controllers\APIs\GamesController@searchGames');
-    Route::GET('/get-popular-games','App\Http\Controllers\APIs\GamesController@PopularGames');
-    Route::GET('/get-trending-games','App\Http\Controllers\APIs\GamesController@TrendingGames');
-});
-
-//Notification
-Route::middleware(['user_auth'])->group(function(){
-Route::GET('/getNotificationList','App\Http\Controllers\APIs\NotificationController@getNotificationList');
-});
-
-// MiniApp Transaction List
-Route::middleware(['user_auth'])->group(function(){
-Route::post('/getTxnList',[MiniAppTxnController::class, 'getMiniAppTransactionList']);
-});
-
-
-
-//Loot Offers
-//Games Related APIs
-Route::middleware(['user_auth'])->group(function(){
-Route::post('/getAllLootoffers','App\Http\Controllers\APIs\LootOffersController@getAllLootoffers');
-Route::post('searchLootoffers','App\Http\Controllers\APIs\LootOffersController@searchLootoffers');
-});
-
-
-
-
-//Offers
-Route::middleware(['user_auth'])->group(function(){
-    Route::post('getOfferList','App\Http\Controllers\APIs\OfferController@getAllOffers');
-});
-
-
-
+?>

@@ -2,56 +2,44 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class WithdrawalRequest extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'amount',
+        'method',
+        'account_details',
+        'status',
+        'requested_at',
+        'processed_at',
+        'rejected_reason',
+    ];
 
-    protected $table = 'withdrawal_request';
-
-    /**
-     * Retrieve a withdrawal request by its ID.
-     *
-     * @param  int  $id
-     * @return \App\Models\WithdrawalRequest|null
-     */
-    public function getById($id)
+    public function user()
     {
-        return self::where('id', $id)->first();
+        return $this->belongsTo(User::class);
     }
 
-
-    /**
-     * Retrieve all withdrawal requests with a specific status.
-     *
-     * @param  string  $status
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getByStatus($status)
+    public function logs()
     {
-        return self::where('status', $status)->get();
+        return $this->hasMany(WithdrawalLog::class, 'withdrawal_id');
     }
 
-    public function getUserTxnListByUserId($user_id)
+    // Scopes (optional but helpful)
+    public function scopeApproved($query)
     {
-        return self::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        return $query->where('status', 'approved');
     }
 
-    /**
-     * Retrieve all withdrawal requests with a specific status.
-     *
-     * @param  string  $status
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function UpdateWithdrawalRequest($id, $txn_id, $message, $txn_time, $status)
+    public function scopePending($query)
     {
-        return self::where('id', $id)->update([
-            'txn_id' => $txn_id,
-            'message' => $message,
-            'txn_time' => $txn_time,
-            'status' => $status,
-        ]);
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
     }
 }
