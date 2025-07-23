@@ -10,9 +10,6 @@ use App\Helpers\ApiResponse;
 
 class CallbackController extends Controller
 {
-    /**
-     * Handle generic callback (for backward compatibility)
-     */
     public function handle(Request $request)
     {
         return ApiResponse::error(
@@ -23,9 +20,6 @@ class CallbackController extends Controller
         );
     }
 
-    /**
-     * Handle Cuelinks callback
-     */
     public function handleCuelinks(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -62,7 +56,7 @@ class CallbackController extends Controller
 
         if (!$order) {
             return ApiResponse::error(
-                'Failed to process callback: Invalid store or user',
+                'Failed to process callback: Invalid provider, store, or user',
                 [],
                 400,
                 'CALLBACK_PROCESSING_FAILED'

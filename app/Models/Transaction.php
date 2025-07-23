@@ -1,5 +1,4 @@
 <?php
-// app/Models/Transaction.php
 
 namespace App\Models;
 
@@ -7,29 +6,40 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
-    protected $fillable = [
-        'user_id', 'store_id', 'affiliate_source', 'reference_id', 'order_id',
-        'transaction_date', 'order_amount', 'affiliate_commission', 'user_commission',
-        'user_commission_percent', 'status', 'subid', 'subid1', 'subid2', 'subid3'
+    protected $fillable = ['user_id', 'type', 'amount', 'reason', 'meta_data', 'status', 'transaction_date'];
+
+    protected $casts = [
+        'meta_data' => 'array',
     ];
 
-    public function scopeApproved($query)
+    public function user()
     {
-        return $query->where('status', 'approved');
-    }
-
-    public function scopeRejected($query)
-    {
-        return $query->where('status', 'rejected');
-    }
-
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
+        return $this->belongsTo(User::class);
     }
 
     public function store()
     {
-        return $this->belongsTo(Store::class);
+        return $this->belongsTo(Store::class, 'store_id');
+    }
+
+    public static function getUserTransactions($userId, $perPage)
+    {
+        return self::with('store:id,name,logo')
+            ->where('user_id', $userId)
+            ->orderByDesc('transaction_date')
+            ->paginate($perPage);
+    }
+
+    public static function createDebitTransaction($userId, $amount, $reason, $metaData)
+    {
+        return self::create([
+            'user_id' => $userId,
+            'type' => 'debit',
+            'amount' => $amount,
+            'reason' => $reason,
+            'meta_data' => $metaData,
+            'status' => 'approved',
+            'transaction_date' => now(),
+        ]);
     }
 }

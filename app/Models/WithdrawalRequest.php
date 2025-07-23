@@ -6,40 +6,43 @@ use Illuminate\Database\Eloquent\Model;
 
 class WithdrawalRequest extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'amount',
-        'method',
-        'account_details',
-        'status',
-        'requested_at',
-        'processed_at',
-        'rejected_reason',
-    ];
+    protected $fillable = ['user_id', 'amount', 'method', 'account_details', 'ifsc_code', 'status', 'requested_at', 'processed_at', 'admin_note'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function logs()
+    public static function createWithdrawal($userId, $amount, $method, $accountDetails, $ifscCode)
     {
-        return $this->hasMany(WithdrawalLog::class, 'withdrawal_id');
+        return self::create([
+            'user_id' => $userId,
+            'amount' => $amount,
+            'method' => $method,
+            'account_details' => $accountDetails,
+            'ifsc_code' => $ifscCode,
+            'status' => 'pending',
+            'requested_at' => now(),
+        ]);
     }
 
-    // Scopes (optional but helpful)
-    public function scopeApproved($query)
+    public static function getUserWithdrawals($userId)
     {
-        return $query->where('status', 'approved');
+        return self::where('user_id', $userId)
+            ->latest()
+            ->get();
     }
 
-    public function scopePending($query)
+    public static function reviewWithdrawal($id, $status, $adminNote)
     {
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeRejected($query)
-    {
-        return $query->where('status', 'rejected');
+        $withdrawal = self::where('id', $id)->where('status', 'pending')->first();
+        if ($withdrawal) {
+            $withdrawal->update([
+                'status' => $status,
+                'admin_note' => $adminNote,
+                'processed_at' => $status !== 'pending' ? now() : null,
+            ]);
+        }
+        return $withdrawal;
     }
 }

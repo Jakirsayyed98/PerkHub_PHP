@@ -3,69 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Support\Str;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Models\WithdrawalRequest;
-
-
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    protected $fillable = ['uuid', 'name', 'email', 'mobile', 'password'];
 
-    protected $fillable = [
-        'user_id',
-        'mobile',
-        'name',
-        'email',
-        'gender',
-        'dob',
-        'is_verified',
-        'referral_code',
-        'referred_by',
-    ];
+    protected $hidden = ['password'];
 
-    protected $hidden = [
-        'id',
-        'created_at',
-        'updated_at',
-    ];
-
-    protected $casts = [
-        'dob' => 'date',
-        'is_verified' => 'boolean',
-    ];
-
-    /**
-     * Boot method to generate custom UUID-based user_id
-     */
-    protected static function booted()
+    public function getJWTIdentifier()
     {
-        static::creating(function ($user) {
-            if (empty($user->user_id)) {
-                $user->user_id = strtoupper(Str::random(12));
-            }
-
-            if (empty($user->referral_code)) {
-                $user->referral_code = strtoupper(Str::random(8));
-            }
-        });
+        return $this->getKey();
     }
 
-    public function generateJwtToken()
+    public function getJWTCustomClaims()
     {
-        return JWTAuth::fromUser($this, ['exp' => now()->addMinutes(15)->timestamp]);
+        return [];
     }
 
-    /**
-     * Relationships
-     */
-    public function transactions()
+    public function orders()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Order::class);
     }
 
     public function withdrawals()
@@ -73,81 +31,105 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(WithdrawalRequest::class);
     }
 
-    /**
-     * Helper: Create or get user by mobile
-     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
     public static function findOrCreateByMobile($mobile)
     {
-        return self::firstOrCreate(
-            ['mobile' => $mobile],
-            [
-                'name' => null,
-                'email' => null,
-                'gender' => 'male',
-                'dob' => null,
-                'is_verified' => true,
-                'referred_by' => null,
-            ]
-        );
+        $user = self::where('mobile', $mobile)->first();
+        if (!$user) {
+            $user = self::create([
+                'uuid' => \Illuminate\Support\Str::uuid(),
+                'mobile' => $mobile,
+                'name' => 'User_' . substr($mobile, -4),
+            ]);
+        }
+        return $user;
     }
 
-    /**
-     * JWT: Identifier
-     */
-    public function getJWTIdentifier()
+    public static function findByMobile($mobile)
     {
-        return $this->getKey();
+        return self::where('mobile', $mobile)->first();
     }
 
-    /**
-     * JWT: Custom claims
-     */
-    public function getJWTCustomClaims()
+    public function generateJwtToken()
     {
-        return [
-            'user_id' => $this->user_id,
-            'mobile' => $this->mobile,
-        ];
+        return \Tymon\JWTAuth\Facades\JWTAuth::fromUser($this);
     }
 
-    /**
-     * Financial summary methods
-     */
-    public function approvedEarnings()
+    public static function updateProfile($userId, $data)
     {
-        return $this->transactions()->approved()->sum('user_commission');
+        $user = self::find($userId);
+        if (!$user) {
+            return null;
+        }
+        $user->update(array_filter($data)); // Only update non-null fields
+        return $user;
     }
 
-    public function rejectedEarnings()
+    public static function getUsers($perPage)
     {
-        return $this->transactions()->rejected()->sum('user_commission');
+        return self::select('id', 'uuid', 'name', 'email', 'mobile', 'created_at')
+            ->paginate($perPage);
     }
 
-    public function pendingEarnings()
+    public static function getUserById($id)
     {
-        return $this->transactions()->pending()->sum('user_commission');
+        return self::select('id', 'uuid', 'name', 'email', 'mobile', 'created_at')
+            ->where('id', $id)
+            ->first();
     }
 
-    public function withdrawnAmount()
+    public static function hasPendingWithdrawal($userId)
     {
-        return $this->withdrawals()->approved()->sum('amount');
+        return WithdrawalRequest::where('user_id', $userId)
+            ->where('status', 'pending')
+            ->exists();
     }
 
-    public function availableBalance()
+    public static function getAvailableBalance($userId)
     {
-        return $this->approvedEarnings()
-            - $this->withdrawals()->whereIn('status', ['approved', 'pending'])->sum('amount');
+        return self::where('id', $userId)
+            ->with('wallet')
+            ->first()
+            ->wallet->balance ?? 0;
     }
 
-    public function hasPendingWithdrawalRequest()
+    public static function getApprovedEarnings($userId)
     {
-        return $this->withdrawals()->where('status', 'pending')->exists();
+        return Transaction::where('user_id', $userId)
+            ->where('type', 'credit')
+            ->where('status', 'approved')
+            ->sum('amount');
     }
 
-    public function hasRecentWithdrawalRequest()
+    public static function getWithdrawnAmount($userId)
     {
-        return $this->withdrawals()
-            ->orderByDesc('created_at')
-            ->first()?->created_at > now()->subHour();
+        return WithdrawalRequest::where('user_id', $userId)
+            ->where('status', 'approved')
+            ->sum('amount');
+    }
+
+    public static function getRejectedEarnings($userId)
+    {
+        return Transaction::where('user_id', $userId)
+            ->where('type', 'credit')
+            ->where('status', 'rejected')
+            ->sum('amount');
+    }
+
+    public static function getPendingEarnings($userId)
+    {
+        return Transaction::where('user_id', $userId)
+            ->where('type', 'credit')
+            ->where('status', 'pending')
+            ->sum('amount');
     }
 }

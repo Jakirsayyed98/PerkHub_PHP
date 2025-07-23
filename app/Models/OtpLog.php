@@ -1,49 +1,44 @@
 <?php
 
-// app/Models/OtpLog.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class OtpLog extends Model
 {
-    protected $fillable = [
-        'mobile',
-        'otp',
-        'status',
-        'ip_address',
-        'user_agent',
-    ];
+    protected $fillable = ['mobile', 'otp', 'status', 'ip', 'user_agent', 'created_at'];
 
     public static function generateOtp($mobile, $otp, $ip, $userAgent)
-{
-    return self::create([
-        'mobile' => $mobile,
-        'otp' => $otp,
-        'status' => 'sent',
-        'ip_address' => $ip,
-        'user_agent' => $userAgent,
-    ]);
-}
+    {
+        return self::create([
+            'mobile' => $mobile,
+            'otp' => $otp,
+            'status' => 'pending',
+            'ip' => $ip,
+            'user_agent' => $userAgent,
+            'created_at' => now(),
+        ]);
+    }
 
+    public static function validateOtp($mobile, $otp)
+    {
+        return self::where('mobile', $mobile)
+            ->where('otp', $otp)
+            ->where('status', 'pending')
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->first();
+    }
 
-public static function validateOtp($mobile, $otp)
-{
-    return self::where('mobile', $mobile)
-        ->where('otp', $otp)
-        ->where('status', 'sent')
-        ->orderByDesc('id')
-        ->first();
-}
+    public function markAsVerified()
+    {
+        $this->update(['status' => 'verified']);
+    }
 
-public static function getLastVerifiedOtp($mobile)
-{
-    return self::where('mobile', $mobile)
-        ->where('status', 'verified')
-        ->orderByDesc('id')
-        ->first();
-}
-
-
+    public static function hasVerifiedOtp($mobile)
+    {
+        return self::where('mobile', $mobile)
+            ->where('status', 'verified')
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->exists();
+    }
 }
