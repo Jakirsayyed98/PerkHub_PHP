@@ -4,16 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateOrdersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-         Schema::create('orders', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('store_id')->constrained()->onDelete('cascade');
@@ -21,9 +16,9 @@ return new class extends Migration
             $table->string('reference_id');
             $table->string('order_id')->nullable();
             $table->timestamp('transaction_date');
-            $table->decimal('order_amount', 10, 2);
-            $table->decimal('affiliate_commission', 10, 2);
-            $table->decimal('user_commission', 10, 2);
+            $table->text('order_amount');
+            $table->text('affiliate_commission');
+            $table->text('user_commission');
             $table->decimal('user_commission_percent', 5, 2);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->string('subid')->nullable();
@@ -33,15 +28,11 @@ return new class extends Migration
             $table->timestamps();
             $table->unique(['affiliate_provider_id', 'reference_id']);
             $table->index(['user_id', 'status']);
-        });    }
+        });
+    }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('orders');
     }
-};
+}

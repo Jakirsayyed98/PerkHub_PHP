@@ -11,7 +11,7 @@ class CreateWithdrawalRequestsTable extends Migration
         Schema::create('withdrawal_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->decimal('amount', 10, 2);
+            $table->text('amount');
             $table->enum('method', ['upi', 'bank']);
             $table->string('account_details');
             $table->string('ifsc_code')->nullable();

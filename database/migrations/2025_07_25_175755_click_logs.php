@@ -15,6 +15,7 @@ class CreateClickLogsTable extends Migration
             $table->string('subid');
             $table->string('subid2');
             $table->timestamp('clicked_at');
+            $table->timestamps();
             $table->index(['store_id', 'user_id']);
         });
     }

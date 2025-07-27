@@ -4,13 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateStoresTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('stores', function (Blueprint $table) {
@@ -25,17 +20,15 @@ return new class extends Migration
             $table->string('label')->nullable();
             $table->decimal('cashback', 5, 2);
             $table->boolean('active')->default(true);
+            $table->foreignId('added_by_admin_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('deleted_by_admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('stores');
     }
-};
+}

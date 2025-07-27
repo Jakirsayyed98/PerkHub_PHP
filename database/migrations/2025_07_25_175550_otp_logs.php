@@ -15,7 +15,8 @@ class CreateOtpLogsTable extends Migration
             $table->enum('status', ['pending', 'verified'])->default('pending');
             $table->string('ip')->nullable();
             $table->string('user_agent')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamp('expires_at');
+            $table->timestamps();
             $table->index('mobile');
         });
     }

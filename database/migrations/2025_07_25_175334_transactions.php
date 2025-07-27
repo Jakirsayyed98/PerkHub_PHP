@@ -11,14 +11,12 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['credit', 'debit']);
+            $table->foreignId('store_id')->nullable()->constrained()->onDelete('set null');
             $table->decimal('amount', 10, 2);
-            $table->string('reason');
-            $table->json('meta_data')->nullable();
+            $table->enum('type', ['cashback', 'withdrawal', 'referral', 'adjustment']);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamp('transaction_date');
             $table->timestamps();
-            $table->index(['user_id', 'status']);
         });
     }
 

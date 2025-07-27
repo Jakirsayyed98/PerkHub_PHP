@@ -14,7 +14,7 @@ class CreateWithdrawalLogsTable extends Migration
             $table->foreignId('withdrawal_id')->constrained('withdrawal_requests')->onDelete('cascade');
             $table->string('action');
             $table->text('description');
-            $table->timestamp('created_at');
+            $table->timestamps();
             $table->index(['user_id', 'withdrawal_id']);
         });
     }
