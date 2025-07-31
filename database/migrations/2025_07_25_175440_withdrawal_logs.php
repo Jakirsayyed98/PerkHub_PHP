@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWithdrawalLogsTable extends Migration
+class WithdrawalLogs extends Migration
 {
     public function up()
     {

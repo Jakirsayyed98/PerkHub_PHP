@@ -5,15 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\SupportTicket;
 use App\Helpers\ApiResponse;
+use App\Models\SupportTicket;
 use Illuminate\Support\Facades\Auth;
 
 class SupportController extends Controller
 {
-    /**
-     * Create a support ticket
-     */
     public function createTicket(Request $request)
     {
         $user = Auth::user();
@@ -33,12 +30,13 @@ class SupportController extends Controller
             );
         }
 
-        $ticket = SupportTicket::createTicket(
-            $user->id,
-            $request->subject,
-            $request->description,
-            $request->order_id
-        );
+        $ticket = SupportTicket::create([
+            'user_id' => $user->id,
+            'subject' => $request->subject,
+            'description' => $request->description,
+            'order_id' => $request->order_id,
+            'status' => 'open',
+        ]);
 
         return ApiResponse::success(
             $ticket,
@@ -46,12 +44,19 @@ class SupportController extends Controller
         );
     }
 
-    /**
-     * List user's support tickets
-     */
-    public function listTickets(Request $request)
+    public function index(Request $request)
     {
-        $tickets = SupportTicket::getUserTickets($request->user()->id, 20);
+        $perPage = $request->input('per_page', 20);
+        $status = $request->input('status');
+
+        $query = SupportTicket::where('user_id', Auth::id());
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $tickets = $query->orderBy('created_at', 'desc')
+            ->paginate($perPage);
 
         return ApiResponse::success(
             $tickets,
@@ -59,12 +64,11 @@ class SupportController extends Controller
         );
     }
 
-    /**
-     * Show specific support ticket
-     */
-    public function showTicket(Request $request, $id)
+    public function show(Request $request, $id)
     {
-        $ticket = SupportTicket::getUserTicketById($request->user()->id, $id);
+        $ticket = SupportTicket::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->first();
 
         if (!$ticket) {
             return ApiResponse::error(
@@ -78,6 +82,29 @@ class SupportController extends Controller
         return ApiResponse::success(
             $ticket,
             'Support ticket retrieved successfully'
+        );
+    }
+
+    public function closeTicket(Request $request, $id)
+    {
+        $ticket = SupportTicket::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->first();
+
+        if (!$ticket) {
+            return ApiResponse::error(
+                'Ticket not found or not authorized',
+                [],
+                404,
+                'TICKET_NOT_FOUND'
+            );
+        }
+
+        $ticket->update(['status' => 'resolved']);
+
+        return ApiResponse::success(
+            $ticket,
+            'Support ticket closed successfully'
         );
     }
 }

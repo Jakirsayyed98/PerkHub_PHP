@@ -4,27 +4,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTransactionsTable extends Migration
+class Wallets extends Migration
 {
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('store_id')->nullable()->constrained()->onDelete('set null');
-            $table->text('amount');
-            $table->text('cashback')->nullable();
-            $table->string('transaction_id')->nullable();
-            $table->string('subid')->nullable();
-            $table->enum('type', ['cashback', 'withdrawal', 'referral', 'adjustment']);
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->timestamp('transaction_date');
+        Schema::create('wallets', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained()->onDelete('cascade')->primary();
+            $table->text('balance')->default(encrypt(0));
+            $table->text('pending')->default(encrypt(0));
+            $table->text('withdrawn')->default(encrypt(0));
+            $table->text('rejected')->default(encrypt(0));
+            $table->text('lifetime_earnings')->default(encrypt(0));
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('wallets');
     }
 }

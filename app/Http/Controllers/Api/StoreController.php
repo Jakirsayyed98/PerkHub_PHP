@@ -4,31 +4,37 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Helpers\ApiResponse;
 use App\Models\Store;
 use App\Models\ClickLog;
-use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class StoreController extends Controller
 {
-    /**
-     * List active stores with tracking URLs
-     */
-    public function list(Request $request)
+    public function index(Request $request)
     {
-        $userId = Auth::user()->id;
-        $stores = Store::getActiveStoresWithTracking($userId);
+        $stores = Store::where('active', true)
+            ->with(['affiliateProvider' => function ($query) {
+                $query->select('id', 'name', 'base_url', 'status');
+            }])
+            ->get()
+            ->map(function ($store) {
+                $store->cashback = (float) $store->cashback;
+                return $store;
+            });
 
         return ApiResponse::success($stores, 'Stores fetched successfully');
     }
 
-    /**
-     * Show specific store details with tracking URL
-     */
-    public function detail(Request $request, $id)
+    public function show(Request $request, $id)
     {
-        $userId = Auth::user()->id;
-        $store = Store::getStoreByIdWithTracking($id, $userId);
+        $store = Store::where('id', $id)
+            ->where('active', true)
+            ->with(['affiliateProvider' => function ($query) {
+                $query->select('id', 'name', 'base_url', 'status');
+            }])
+            ->first();
 
         if (!$store) {
             return ApiResponse::error(
@@ -39,36 +45,55 @@ class StoreController extends Controller
             );
         }
 
+        $store->cashback = (float) $store->cashback;
+
         return ApiResponse::success($store, 'Store details fetched successfully');
     }
 
-    /**
-     * Track store click and generate tracking URL
-     */
     public function trackStoreClick(Request $request, $id)
     {
-        $userId = Auth::user()->id;
-        $store = Store::getActiveStoreById($id);
+        $user = Auth::user();
+        $store = Store::where('id', $id)
+            ->where('active', true)
+            ->with(['affiliateProvider' => function ($query) {
+                $query->select('id', 'name', 'base_url', 'status');
+            }])
+            ->first();
 
-        if (!$store || !$store->affiliate_url) {
+        if (!$store || !$store->affiliateProvider || $store->affiliateProvider->status !== 'active') {
             return ApiResponse::error(
-                'Store not found or no tracking URL',
+                'Store not found or inactive',
                 [],
                 404,
                 'STORE_NOT_FOUND'
             );
         }
 
-        // Log the click
-        $subid1 = (string) $store->id;
-        $subid2 = (string) $userId;
-        ClickLog::logClick($store->id, $userId, $subid1, $subid2);
+        $subid = "store_{$store->id}";
+        $subid2 = (string) $user->id;
 
-        // Generate tracking URL
-        $finalUrl = Store::buildTrackingUrl($store->affiliate_url, $subid1, $subid2);
+        ClickLog::create([
+            'store_id' => $store->id,
+            'user_id' => $user->id,
+            'subid' => $subid,
+            'subid2' => $subid2,
+            'clicked_at' => now(),
+        ]);
+
+        $response = Http::withOptions(['verify' => false])->get($store->affiliateProvider->base_url, [
+            'subid1' => $store->id,
+            'subid2' => $user->id,
+        ]);
+
+        if ($response->failed()) {
+            \Log::error('Cuelinks request failed', ['error' => $response->body()]);
+            return ApiResponse::error('Tracking failed', [], 500);
+        }
+
+        $trackingUrl = $response->json()['url'] ?? $store->affiliateProvider->base_url;
 
         return ApiResponse::success([
-            'redirect_url' => $finalUrl,
+            'redirect_url' => $trackingUrl,
         ], 'Tracking URL generated successfully');
     }
 }

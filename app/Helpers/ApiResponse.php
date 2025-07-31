@@ -20,7 +20,7 @@ class ApiResponse
             'status'     => false,
             'message'    => $message,
             'code'       => $code,
-            'error_code' => $errorCode, // 👈 Custom application error code
+            'error_code' => $errorCode,
             'errors'     => $errors
         ], $code);
     }

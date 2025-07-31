@@ -5,20 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
+use App\Helpers\ApiResponse;
+use App\Models\Wallet;
 use App\Models\Transaction;
 use App\Models\WithdrawalRequest;
 use App\Models\WithdrawalLog;
-use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 
 class WalletController extends Controller
 {
-    /**
-     * Submit a withdrawal request
-     */
     public function withdraw(Request $request)
     {
         $user = Auth::user();
@@ -27,6 +25,7 @@ class WalletController extends Controller
             'amount' => 'required|numeric|min:1',
             'method' => 'required|in:upi,bank',
             'account_details' => 'required|string|max:255',
+            'ifsc_code' => 'required_if:method,bank|regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
         ]);
 
         if ($validator->fails()) {
@@ -47,22 +46,6 @@ class WalletController extends Controller
             );
         }
 
-        if ($request->method === 'bank') {
-            $bankValidator = Validator::make($request->all(), [
-                'account_details' => 'required|regex:/^[0-9]{9,18}$/', // Basic account number validation
-                'ifsc_code' => 'required|regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
-            ]);
-
-            if ($bankValidator->fails()) {
-                return ApiResponse::error(
-                    'Invalid bank account details',
-                    $bankValidator->errors(),
-                    422,
-                    'INVALID_BANK_DETAILS'
-                );
-            }
-        }
-
         $key = 'withdraw:' . $user->id;
         if (RateLimiter::tooManyAttempts($key, 1)) {
             return ApiResponse::error(
@@ -73,16 +56,8 @@ class WalletController extends Controller
             );
         }
 
-        if (User::hasPendingWithdrawal($user->id)) {
-            return ApiResponse::error(
-                'You already have a pending withdrawal request',
-                [],
-                409,
-                'PENDING_WITHDRAWAL_EXISTS'
-            );
-        }
-
-        if (User::getAvailableBalance($user->id) < $request->amount) {
+        $wallet = Wallet::where('user_id', $user->id)->first();
+        if (!$wallet || (float) Crypt::decrypt($wallet->balance) < $request->amount) {
             return ApiResponse::error(
                 'Insufficient balance',
                 [],
@@ -91,39 +66,82 @@ class WalletController extends Controller
             );
         }
 
-        $withdrawal = DB::transaction(function () use ($user, $request) {
-            $withdrawal = WithdrawalRequest::createWithdrawal(
-                $user->id,
-                $request->amount,
-                $request->method,
-                $request->account_details,
-                $request->ifsc_code ?? null
+        if (WithdrawalRequest::where('user_id', $user->id)->where('status', 'pending')->exists()) {
+            return ApiResponse::error(
+                'You already have a pending withdrawal request',
+                [],
+                409,
+                'PENDING_WITHDRAWAL_EXISTS'
             );
+        }
 
-            WithdrawalLog::logWithdrawal(
-                $user->id,
-                $withdrawal->id,
-                'requested',
-                "User requested withdrawal of ₹{$request->amount}"
-            );
+        $withdrawal = DB::transaction(function () use ($user, $request, $wallet) {
+            $withdrawal = WithdrawalRequest::create([
+                'user_id' => $user->id,
+                'amount' => Crypt::encrypt($request->amount),
+                'method' => $request->method,
+                'account_details' => $request->account_details,
+                'ifsc_code' => $request->ifsc_code,
+                'requested_at' => now(),
+            ]);
+
+            WithdrawalLog::create([
+                'user_id' => $user->id,
+                'withdrawal_id' => $withdrawal->id,
+                'action' => 'requested',
+                'description' => "User requested withdrawal of ₹{$request->amount}",
+            ]);
+
+            $balance = (float) Crypt::decrypt($wallet->balance) - $request->amount;
+            $pending = (float) Crypt::decrypt($wallet->pending) + $request->amount;
+            $wallet->update([
+                'balance' => Crypt::encrypt($balance),
+                'pending' => Crypt::encrypt($pending),
+            ]);
+
+            Transaction::create([
+                'user_id' => $user->id,
+                'amount' => Crypt::encrypt($request->amount),
+                'type' => 'withdrawal',
+                'status' => 'pending',
+                'transaction_date' => now(),
+            ]);
 
             return $withdrawal;
         });
 
-        RateLimiter::hit($key, 3600); // 1 hour decay
+        RateLimiter::hit($key, 3600);
 
+        $withdrawal->amount = (float) Crypt::decrypt($withdrawal->amount);
         return ApiResponse::success(
             $withdrawal,
             'Withdrawal request submitted successfully'
         );
     }
 
-    /**
-     * List user's withdrawal history
-     */
     public function withdrawals(Request $request)
     {
-        $withdrawals = WithdrawalRequest::getUserWithdrawals($request->user()->id);
+        $perPage = $request->input('per_page', 20);
+        $status = $request->input('status');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $query = WithdrawalRequest::where('user_id', Auth::id());
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('requested_at', [$startDate, $endDate]);
+        }
+
+        $withdrawals = $query->orderBy('requested_at', 'desc')
+            ->paginate($perPage)
+            ->through(function ($withdrawal) {
+                $withdrawal->amount = (float) Crypt::decrypt($withdrawal->amount);
+                return $withdrawal;
+            });
 
         return ApiResponse::success(
             $withdrawals,
@@ -131,19 +149,17 @@ class WalletController extends Controller
         );
     }
 
-    /**
-     * Get wallet summary
-     */
     public function getWalletSummary(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = Auth::id();
+        $wallet = Wallet::where('user_id', $userId)->first();
 
         $summary = [
-            'lifetime_earned' => User::getApprovedEarnings($userId),
-            'redeemed' => User::getWithdrawnAmount($userId),
-            'rejected' => User::getRejectedEarnings($userId),
-            'pending' => User::getPendingEarnings($userId),
-            'available' => User::getAvailableBalance($userId),
+            'lifetime_earnings' => $wallet ? (float) Crypt::decrypt($wallet->lifetime_earnings) : 0,
+            'withdrawn' => $wallet ? (float) Crypt::decrypt($wallet->withdrawn) : 0,
+            'rejected' => $wallet ? (float) Crypt::decrypt($wallet->rejected) : 0,
+            'pending' => $wallet ? (float) Crypt::decrypt($wallet->pending) : 0,
+            'available' => $wallet ? (float) Crypt::decrypt($wallet->balance) : 0,
         ];
 
         return ApiResponse::success(
@@ -152,12 +168,38 @@ class WalletController extends Controller
         );
     }
 
-    /**
-     * List user's transactions
-     */
-    public function getTransactions(Request $request)
+    public function transactions(Request $request)
     {
-        $transactions = Transaction::getUserTransactions($request->user()->id, 20);
+        $perPage = $request->input('per_page', 20);
+        $type = $request->input('type');
+        $status = $request->input('status');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $query = Transaction::where('user_id', Auth::id())
+            ->with(['store' => function ($query) {
+                $query->select('id', 'name', 'icon', 'logo', 'banner', 'cashback');
+            }]);
+
+        if ($type) {
+            $query->where('type', $type);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
+        }
+
+        $transactions = $query->orderBy('transaction_date', 'desc')
+            ->paginate($perPage)
+            ->through(function ($transaction) {
+                $transaction->amount = (float) Crypt::decrypt($transaction->amount);
+                $transaction->cashback = $transaction->cashback ? (float) Crypt::decrypt($transaction->cashback) : null;
+                return $transaction;
+            });
 
         return ApiResponse::success(
             $transactions,
@@ -165,9 +207,6 @@ class WalletController extends Controller
         );
     }
 
-    /**
-     * Approve or reject withdrawal (for Admin Panel)
-     */
     public function reviewWithdrawal(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -185,29 +224,58 @@ class WalletController extends Controller
         }
 
         $withdrawal = DB::transaction(function () use ($request, $id) {
-            $withdrawal = WithdrawalRequest::reviewWithdrawal(
-                $id,
-                $request->status,
-                $request->admin_note
-            );
+            $withdrawal = WithdrawalRequest::where('id', $id)
+                ->where('status', 'pending')
+                ->first();
 
-            if ($withdrawal) {
-                WithdrawalLog::logWithdrawal(
-                    $withdrawal->user_id,
-                    $withdrawal->id,
-                    $request->status,
-                    "Withdrawal {$request->status} by admin: " . ($request->admin_note ?? 'No note')
-                );
-
-                if ($request->status === 'approved') {
-                    Transaction::createDebitTransaction(
-                        $withdrawal->user_id,
-                        $withdrawal->amount,
-                        'Withdrawal processed',
-                        ['withdrawal_id' => $withdrawal->id]
-                    );
-                }
+            if (!$withdrawal) {
+                return null;
             }
+
+            $wallet = Wallet::where('user_id', $withdrawal->user_id)->first();
+
+            $withdrawal->update([
+                'status' => $request->status,
+                'admin_note' => $request->admin_note,
+                'processed_at' => now(),
+            ]);
+
+            if ($request->status === 'approved') {
+                $pending = (float) Crypt::decrypt($wallet->pending) - (float) Crypt::decrypt($withdrawal->amount);
+                $withdrawn = (float) Crypt::decrypt($wallet->withdrawn) + (float) Crypt::decrypt($withdrawal->amount);
+                $wallet->update([
+                    'pending' => Crypt::encrypt($pending),
+                    'withdrawn' => Crypt::encrypt($withdrawn),
+                ]);
+
+                Transaction::where('user_id', $withdrawal->user_id)
+                    ->where('type', 'withdrawal')
+                    ->where('amount', $withdrawal->amount)
+                    ->where('status', 'pending')
+                    ->update(['status' => 'approved']);
+            } elseif ($request->status === 'rejected') {
+                $pending = (float) Crypt::decrypt($wallet->pending) - (float) Crypt::decrypt($withdrawal->amount);
+                $rejected = (float) Crypt::decrypt($wallet->rejected) + (float) Crypt::decrypt($withdrawal->amount);
+                $balance = (float) Crypt::decrypt($wallet->balance) + (float) Crypt::decrypt($withdrawal->amount);
+                $wallet->update([
+                    'pending' => Crypt::encrypt($pending),
+                    'rejected' => Crypt::encrypt($rejected),
+                    'balance' => Crypt::encrypt($balance),
+                ]);
+
+                Transaction::where('user_id', $withdrawal->user_id)
+                    ->where('type', 'withdrawal')
+                    ->where('amount', $withdrawal->amount)
+                    ->where('status', 'pending')
+                    ->update(['status' => 'rejected']);
+            }
+
+            WithdrawalLog::create([
+                'user_id' => $withdrawal->user_id,
+                'withdrawal_id' => $withdrawal->id,
+                'action' => $request->status,
+                'description' => "Withdrawal {$request->status} by admin: " . ($request->admin_note ?? 'No note'),
+            ]);
 
             return $withdrawal;
         });
@@ -221,10 +289,10 @@ class WalletController extends Controller
             );
         }
 
+        $withdrawal->amount = (float) Crypt::decrypt($withdrawal->amount);
         return ApiResponse::success(
             $withdrawal,
             "Withdrawal {$request->status} successfully"
         );
     }
 }
-

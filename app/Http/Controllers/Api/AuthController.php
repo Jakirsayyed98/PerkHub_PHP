@@ -16,17 +16,18 @@ class AuthController extends Controller
         $request->validate(['mobile' => 'required|string|min:10|max:15']);
         $mobile = $request->mobile;
         $otp = rand(100000, 999999);
-        
+
         OtpLog::create([
             'mobile' => $mobile,
             'otp' => $otp,
+            'status' => 'pending',
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
             'expires_at' => now()->addMinutes(10),
         ]);
 
         // Simulate sending OTP (replace with actual SMS gateway)
-        \Log::info("OTP $otp sent to $mobile");
-
-        return ApiResponse::success('OTP sent', ['mobile' => $mobile]);
+        return ApiResponse::success('null', 'OTP sent successfully');
     }
 
     public function verifyOtp(Request $request)
@@ -38,12 +39,15 @@ class AuthController extends Controller
 
         $otpLog = OtpLog::where('mobile', $request->mobile)
             ->where('otp', $request->otp)
+            ->where('status', 'pending')
             ->where('expires_at', '>=', now())
             ->first();
 
         if (!$otpLog) {
             return ApiResponse::error('Invalid or expired OTP', [], 400);
         }
+
+        $otpLog->update(['status' => 'verified']);
 
         $user = User::where('mobile', $request->mobile)->first();
         
@@ -56,10 +60,10 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
         
-        return ApiResponse::success('OTP verified', [
+        return ApiResponse::success([
             'token' => $token,
-            'is_new_user' => is_null($user->name) || is_null($user->email),
-        ]);
+            'is_new_user' => $user->name === null || $user->email === null || $user->gender === null || $user->dob === null,
+        ], 'OTP verified');
     }
 
     public function updatePersonalInfo(Request $request)
@@ -68,20 +72,24 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'gender' => 'nullable|in:male,female,other',
+            'dob' => 'nullable|date|before:today',
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'gender' => $request->gender,
+            'dob' => $request->dob,
         ]);
 
-        return ApiResponse::success('Personal info updated', $user);
+        return ApiResponse::success($user, 'Personal info updated');
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return ApiResponse::success('Logged out');
+        return ApiResponse::success(null, 'Logged out');
     }
 
     public function refresh(Request $request)
@@ -89,6 +97,6 @@ class AuthController extends Controller
         $user = $request->user();
         $user->currentAccessToken()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
-        return ApiResponse::success('Token refreshed', ['token' => $token]);
+        return ApiResponse::success(['token' => $token], 'Token refreshed');
     }
 }
