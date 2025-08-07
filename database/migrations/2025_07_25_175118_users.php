@@ -16,6 +16,7 @@ class Users extends Migration
             $table->string('mobile', 15)->unique()->nullable();
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->date('dob')->nullable();
+            $table->string('status')->default('0') ->comment('0: inactive, 1: active');
             $table->timestamps();
         });
     }

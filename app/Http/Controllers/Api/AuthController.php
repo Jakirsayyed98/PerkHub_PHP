@@ -17,6 +17,9 @@ class AuthController extends Controller
         $mobile = $request->mobile;
         $otp = rand(100000, 999999);
 
+
+        print_r("OTP for mobile $mobile is: $otp\n"); // For debugging, remove in production
+
         OtpLog::create([
             'mobile' => $mobile,
             'otp' => $otp,

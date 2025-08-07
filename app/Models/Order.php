@@ -77,4 +77,17 @@ class Order extends Model
             ]
         );
     }
+
+    public static function getAllOrders()
+    {
+        return self::all()->sortByDesc('updated_at');
+    }
+
+    public static function getAllOrdersByPage($perPage = 10)
+    {
+        return self::with(['user:id,name', 'store:id,name,logo'])
+            ->orderByDesc('transaction_date')
+            ->paginate($perPage);
+    }
+
 }

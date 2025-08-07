@@ -11,6 +11,7 @@ class WithdrawalRequests extends Migration
         Schema::create('withdrawal_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('type')->default('1')->comment('1 Cashback Withdrawal')->nullable();
             $table->text('amount');
             $table->enum('method', ['upi', 'bank']);
             $table->string('account_details');
@@ -19,6 +20,7 @@ class WithdrawalRequests extends Migration
             $table->timestamp('requested_at');
             $table->timestamp('processed_at')->nullable();
             $table->text('admin_note')->nullable();
+            $table->string('txn_id')->nullable();
             $table->timestamps();
             $table->index(['user_id', 'status']);
         });

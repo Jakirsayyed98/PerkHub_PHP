@@ -13,8 +13,11 @@ class Notifications extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('message');
+            $table->string('image')->nullable();
+            $table->string('click_action')->nullable();
             $table->enum('type', ['global', 'user_specific'])->default('global');
             $table->boolean('is_read')->default(false);
+            $table->boolean('status')->default(true);
             $table->timestamps();
             $table->index(['user_id', 'type', 'is_read']);
         });

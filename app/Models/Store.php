@@ -51,4 +51,8 @@ class Store extends Model
         $baseUrl = config("affiliate.providers.{$providerName}.base_url", '');
         return $baseUrl . '?subid1=' . urlencode($subid1) . '&subid2=' . urlencode($subid2);
     }
+
+     public function getAllStores(){
+        return self::all();
+    }
 }

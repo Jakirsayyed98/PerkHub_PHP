@@ -9,6 +9,6 @@ class Admin extends Authenticatable
 {
     use HasApiTokens;
 
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = ['name', 'email', 'password', 'is_super_admin'];
     protected $hidden = ['password', 'remember_token'];
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ApiResponse;
-use App\Models\Wallet;
+use App\Models\wallets;
 use App\Models\Transaction;
 use App\Models\WithdrawalRequest;
 use App\Models\WithdrawalLog;
@@ -56,7 +56,7 @@ class WalletController extends Controller
             );
         }
 
-        $wallet = Wallet::where('user_id', $user->id)->first();
+        $wallet = (new wallets)->findOneByUserId($user->id);
         if (!$wallet || (float) Crypt::decrypt($wallet->balance) < $request->amount) {
             return ApiResponse::error(
                 'Insufficient balance',

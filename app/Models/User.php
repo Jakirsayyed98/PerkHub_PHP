@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+
+     public function getAllUsers()
+    {
+        return self::where('status', '1')->get();
+    }
 }

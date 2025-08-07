@@ -45,4 +45,14 @@ class WithdrawalRequest extends Model
         }
         return $withdrawal;
     }
+
+    public function getAllPendingWithdrawals()
+    {
+        return self::where('status', 'pending')->get();
+    }
+
+    public function getByStatus($status)
+    {
+        return self::where('status', $status)->get();
+    }
 }

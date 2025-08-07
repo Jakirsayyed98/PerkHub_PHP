@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AffiliateProvider extends Model
 {
+    protected $table = 'affiliate_providers';
     protected $fillable = ['name', 'callback_secret'];
 
     public function stores()
@@ -21,5 +22,10 @@ class AffiliateProvider extends Model
     public static function findByName($name)
     {
         return self::where('name', $name)->first();
+    }
+
+    public static function getActiveProviders()
+    {
+        return self::where('status', 'active')->get();
     }
 }

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -15,32 +17,34 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        Log::info('Login attempt', $request->only('email'));
-        $credentials = $request->validate([
+        // $credentials = $request->only('email', 'password');
+
+        // $user = User::where('email', $credentials['email'])->first();
+
+        // if (!$user || !Hash::check($credentials['password'], $user->password)) {
+        //     return back()->withErrors(['email' => 'Invalid credentials']);
+        // }
+
+        // $token = $user->createToken('admin-token')->plainTextToken;
+
+        // session(['admin_token' => $token]);
+
+          $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
         if (auth()->guard('admin')->attempt($credentials)) {
             $user = auth()->guard('admin')->user();
-            Log::info('Login successful', ['user_id' => $user->id]);
             $token = $user->createToken('admin-token')->plainTextToken;
 
-            return response()->json([
-                'status' => true,
-                'data' => ['token' => $token],
-                'message' => 'Login successful',
-            ]);
+            // $request->session()->regenerate();
+             session(['admin_token' => $token]);
+
+             return redirect()->route('admin.dashboard');
         }
 
-        Log::error('Login failed', $request->only('email'));
-        return response()->json([
-            'status' => false,
-            'message' => 'Invalid credentials',
-        ], 401);
+
+        return redirect()->route('admin.dashboard');
     }
-    public function dashboard()
-{
-    return view('admin.dashboard');
-}
 }
