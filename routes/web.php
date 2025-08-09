@@ -162,7 +162,15 @@ Route::get('CommisionSettingAddOrUpdateProcess',[CommisionSettingController::cla
 Route::get('/cuelink/callback', 'App\Http\Controllers\Admin\CueLinkController@handleCallback');
 
 // Admin Ticket Routes
-Route::get('adminTicketList', [SupportTicketsController::class, 'adminTicketList'])->name('admin.ticket.list');
-Route::get('CreateTicketAndUpdate/{id?}', [SupportTicketsController::class, 'CreateTicketAndUpdate'])->name('admin.ticket.create');
+Route::get('adminTicketList', [SupportTicketsController::class, 'index']);//->name('admin.ticket.list');
+Route::get('CreateTicketAndUpdate/{id?}', [SupportTicketsController::class, 'CreateTicketAndUpdate']);//->name('admin.ticket.create');
 Route::post('createandupdateticketprocess', [SupportTicketsController::class, 'createandupdateticketprocess'])->name('admin.ticket.create.process');
 Route::delete('deleteTicketProcess/{id}', [SupportTicketsController::class, 'deleteTicketProcess'])->name('admin.ticket.delete');
+
+
+Route::get('/tickets/open', [SupportTicketsController::class, 'index'])->name('admin.ticket.list');
+Route::get('/tickets/closed', [SupportTicketsController::class, 'closed'])->name('admin.ticket.closed');
+Route::get('/tickets/{ticket}', [SupportTicketsController::class, 'show'])->name('tickets.show');
+Route::post('/tickets/{ticket}/reply', [SupportTicketsController::class, 'reply'])->name('tickets.reply');
+Route::post('/tickets/{ticket}/resolve', [SupportTicketsController::class, 'resolve'])->name('tickets.resolve');
+Route::post('/tickets/{ticket}/reopen', [SupportTicketsController::class, 'reopen'])->name('tickets.reopen');

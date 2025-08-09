@@ -543,15 +543,21 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.ticket.list') }}" class="nav-link">
+                                    <a href="adminTicketList?status=open" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Ticket List</p>
+                                        <p>Open Ticket</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.ticket.create') }}" class="nav-link">
+                                 <li class="nav-item">
+                                    <a href="adminTicketList?status=in_progress" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Create Ticket</p>
+                                        <p>In Progress Ticket</p>
+                                    </a>
+                                </li>
+                                 <li class="nav-item">
+                                    <a href="adminTicketList?status=resolved" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Resolved Ticket</p>
                                     </a>
                                 </li>
                             </ul>

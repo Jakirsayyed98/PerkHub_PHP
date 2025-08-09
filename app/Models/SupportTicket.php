@@ -24,33 +24,46 @@ class SupportTicket extends Model
 
     protected $casts = [
         'status' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
-    public static function createTicket($userId, $subject, $description, $orderId)
+    public function replies()
     {
-        return self::create([
-            'user_id' => $userId,
-            'subject' => $subject,
-            'description' => $description,
-            'order_id' => $orderId,
-            'status' => 'open',
-            'created_at' => now(),
-        ]);
+        return $this->hasMany(TicketReply::class, 'support_ticket_id', 'id');
     }
 
-    public static function getUserTickets($userId, $perPage)
+    public static function createTicket($userId, $subject, $description, $orderId = null)
+    {
+        try {
+            return self::create([
+                'user_id' => $userId,
+                'subject' => $subject,
+                'description' => $description,
+                'order_id' => $orderId,
+                'status' => 'open',
+                'created_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create ticket', ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public static function getUserTickets($userId, $perPage = 10)
     {
         return self::where('user_id', $userId)
+            ->with('replies')
             ->orderByDesc('created_at')
             ->paginate($perPage);
     }
@@ -59,17 +72,22 @@ class SupportTicket extends Model
     {
         return self::where('user_id', $userId)
             ->where('id', $ticketId)
+            ->with('replies')
             ->first();
     }
 
-    public static function findAllTickets()
+    public static function findAllTickets($status = null)
     {
-        return self::query()->orderByDesc('created_at')->get();
+        $query = self::query()->with('user', 'order', 'replies');
+        if ($status) {
+            $query->where('status', $status);
+        }
+        return $query->orderByDesc('created_at')->get();
     }
 
     public static function findTicketById($id)
     {
-        return self::find($id);
+        return self::with('user', 'order', 'replies')->find($id);
     }
 
     public static function addOrUpdateTicket($data)
@@ -100,5 +118,17 @@ class SupportTicket extends Model
             return $ticket->delete();
         }
         return false;
+    }
+
+    public function resolve()
+    {
+        $this->status = 'resolved';
+        return $this->save();
+    }
+
+    public function reopen()
+    {
+        $this->status = 'open';
+        return $this->save();
     }
 }

@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Ticket Form</h1>
+                    <h1>{{ $ticket ? 'Ticket #' . $ticket->id : 'Create Ticket' }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -24,12 +24,12 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <!-- left column -->
+                <!-- left column: Ticket Form -->
                 <div class="col-md-6">
                     <!-- general form elements -->
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">{{ $ticket ? 'Update Ticket' : 'Add Ticket' }}</h3>
+                            <h3 class="card-title">{{ $ticket ? 'Update Ticket' : 'Create Ticket' }}</h3>
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
@@ -67,7 +67,7 @@
                                 <!-- Description -->
                                 <div class="form-group">
                                     <label for="description">Description</label>
-                                    <textarea id="compose-textarea" class="form-control" style="height: 300px" name="description">{{ old('description', $ticket->description ?? '') }}</textarea>
+                                    <textarea id="compose-textarea" class="form-control" style="height: 200px" name="description">{{ old('description', $ticket->description ?? '') }}</textarea>
                                     @error('description')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -113,6 +113,73 @@
                     <!-- /.card -->
                 </div>
                 <!--/.col (left) -->
+
+                <!-- right column: Messaging Thread -->
+                @if ($ticket)
+                    <div class="col-md-6">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Messaging Thread</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <!-- Original Ticket Message -->
+                                <div class="direct-chat-messages" style="height: 400px; overflow-y: auto;">
+                                    <div class="direct-chat-msg">
+                                        <div class="direct-chat-infos clearfix">
+                                            <span class="direct-chat-name">{{ $ticket->user ? ($ticket->user->name ?? $ticket->user->email) : 'Guest' }}</span>
+                                            <span class="direct-chat-timestamp">{{ $ticket->created_at->format('M d, Y H:i') }}</span>
+                                        </div>
+                                        <div class="direct-chat-text">
+                                            {{ $ticket->description }}
+                                        </div>
+                                    </div>
+                                    <!-- Replies -->
+                                    @foreach ($ticket->replies as $reply)
+                                        <div class="direct-chat-msg {{ $reply->admin_id ? 'right' : '' }}">
+                                            <div class="direct-chat-infos clearfix">
+                                                <span class="direct-chat-name">{{ $reply->admin ? $reply->admin->name : 'User' }}</span>
+                                                <span class="direct-chat-timestamp">{{ $reply->created_at->format('M d, Y H:i') }}</span>
+                                            </div>
+                                            <div class="direct-chat-text">
+                                                {{ $reply->message }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <!-- Reply Form -->
+                                <form action="{{ route('tickets.reply', $ticket->id) }}" method="post">
+                                    @csrf
+                                    <div class="input-group mt-3">
+                                        <textarea name="message" class="form-control" placeholder="Type your reply..." required></textarea>
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-primary">Send</button>
+                                        </div>
+                                    </div>
+                                    @error('message')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </form>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <div class="btn-group">
+                                    <form action="{{ route('tickets.resolve', $ticket->id) }}" method="post" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success">Resolve</button>
+                                    </form>
+                                    <form action="{{ route('tickets.reopen', $ticket->id) }}" method="post" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-warning">Reopen</button>
+                                    </form>
+                                    <a href="{{ route('admin.ticket.delete', $ticket->id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this ticket?')">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <!--/.col (right) -->
+                @endif
             </div>
             <!-- /.row -->
         </div><!-- /.container-fluid -->
