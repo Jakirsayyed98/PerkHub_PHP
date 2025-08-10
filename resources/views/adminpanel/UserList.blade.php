@@ -49,9 +49,9 @@
                                         <td style="width:100px">{{$item->rejected}}</td>
 
 
-                                        @if($item->gender=="0")
+                                        @if($item->gender=="male")
                                         <td style="width:100px">Male</td>
-                                        @elseif($item->gender=="1")
+                                        @elseif($item->gender=="female")
                                         <td style="width:100px">Female</td>
                                         @else
                                         <td style="width:100px">Other</td>

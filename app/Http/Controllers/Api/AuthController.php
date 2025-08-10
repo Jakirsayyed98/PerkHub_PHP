@@ -17,9 +17,6 @@ class AuthController extends Controller
         $mobile = $request->mobile;
         $otp = rand(100000, 999999);
 
-
-        print_r("OTP for mobile $mobile is: $otp\n"); // For debugging, remove in production
-
         OtpLog::create([
             'mobile' => $mobile,
             'otp' => $otp,
@@ -58,6 +55,7 @@ class AuthController extends Controller
             $user = User::create([
                 'uuid' => Str::uuid(),
                 'mobile' => $request->mobile,
+                'status'=>true
             ]);
         }
 
@@ -72,13 +70,6 @@ class AuthController extends Controller
     public function updatePersonalInfo(Request $request)
     {
         $user = $request->user();
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'gender' => 'nullable|in:male,female,other',
-            'dob' => 'nullable|date|before:today',
-        ]);
-
         $user->update([
             'name' => $request->name,
             'email' => $request->email,

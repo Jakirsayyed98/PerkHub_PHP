@@ -67,8 +67,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::put('notifications/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::post('notifications/fcm-token', [NotificationController::class, 'storeFcmToken']);
-    Route::post('auth/logout', [AuthController::class, 'logout']);
-    Route::post('auth/refresh', [AuthController::class, 'refresh']);
+    Route::post('auth/logout', [ApiAuthController::class, 'logout']);
+    Route::post('auth/refresh', [ApiAuthController::class, 'refresh']);
 });
 
 Route::post('callback/cuelinks', [CallbackController::class, 'handleCuelinks'])->middleware('callback.validate');
