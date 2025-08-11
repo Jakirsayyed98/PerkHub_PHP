@@ -242,5 +242,15 @@ class Controller extends BaseController
     return $randomString;
 }
 
+ function validateUrl($url)
+    {
+        // Ensure URL is absolute; prepend domain if relative
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            $url = url($url);
+        }
+        // Check if URL exists (optional, can be heavy, use sparingly)
+        $headers = @get_headers($url);
+        return $headers && strpos($headers[0], '200') !== false ? $url : url('/default-page');
+    }
 
 }

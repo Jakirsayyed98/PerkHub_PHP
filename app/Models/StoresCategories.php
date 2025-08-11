@@ -15,7 +15,14 @@ class StoresCategories extends Model
 
     public function getAllCategories()
     {
-        return self::all();
+        return self::where('status', true)->get()->map(function ($category) {
+                    $category->image = $category->image ? url('upload/images/' . $category->image) : null;
+                    return $category;
+                });
     }
 
+    public function getAllHomepageVisibleCategories()
+    {
+        return self::where('homepage_visible', true)->orWhere('status',true)->get();
+    }
 }

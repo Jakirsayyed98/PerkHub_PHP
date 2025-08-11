@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
         //
         // Paginator::useBootstrap();
         if (app()->environment('local')) {
-            // URL::forceScheme('https'); // ✅ This forces HTTPS in asset URLs
+            URL::forceScheme('https'); // ✅ This forces HTTPS in asset URLs
         }
     }
 }
