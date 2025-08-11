@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponse;
 use App\Models\Store;
+use App\Models\StoresCategories;
 use App\Models\ClickLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+
 
 class StoreController extends Controller
 {
@@ -96,4 +99,57 @@ class StoreController extends Controller
             'redirect_url' => $trackingUrl,
         ], 'Tracking URL generated successfully');
     }
+
+    public function getHomepageData(Request $request)
+    {
+        // Cache the response for 10 minutes
+        $data = Cache::remember('homepage_data', 600, function () {
+            // Fetch store categories (active and homepage visible)
+            $categories = StoresCategories::where('status', true)
+                ->where('homepage_visible', true)
+                ->select('id', 'name', 'description', 'image')
+                ->get();
+
+            // Fetch popular stores
+            $popularStores = Store::where('status', true)
+                ->where('popular', true)
+                ->with(['affiliateProvider' => function ($query) {
+                    $query->select('id', 'name'); // Assuming users table has a name field
+                }])
+                ->select('id', 'name', 'icon', 'logo', 'banner', 'url', 'cashback', 'affiliate_provider_id')
+                ->take(10) // Limit to 10 for performance
+                ->get();
+
+            // Fetch trending stores
+            $trendingStores = Store::where('status', true)
+                ->where('trending', true)
+                ->with(['affiliateProvider' => function ($query) {
+                    $query->select('id', 'name');
+                }])
+                ->select('id', 'name', 'icon', 'logo', 'banner', 'url', 'cashback', 'affiliate_provider_id')
+                ->take(10)
+                ->get();
+
+            // Fetch top cashback providers
+            $topCashbackStores = Store::where('status', true)
+                ->where('top_cashback', true)
+                ->with(['affiliateProvider' => function ($query) {
+                    $query->select('id', 'name');
+                }])
+                ->select('id', 'name', 'icon', 'logo', 'banner', 'url', 'cashback', 'affiliate_provider_id')
+                ->take(10)
+                ->get();
+
+            return [
+                'store_categories' => $categories,
+                'popular_stores' => $popularStores,
+                'trending_stores' => $trendingStores,
+                'top_cashback_providers' => $topCashbackStores,
+            ];
+        });
+
+
+         return ApiResponse::success($data, 'Homepage data retrieved successfully');
+    }
+
 }

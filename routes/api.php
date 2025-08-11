@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('user/update-info', [ApiAuthController::class, 'updatePersonalInfo']);
     Route::get('user/profile', [UserController::class, 'showUser']);
     Route::put('user/profile', [UserController::class, 'updateProfile']);
+    Route::get('/homepage-data', [StoreController::class, 'getHomepageData']);
     Route::get('stores', [StoreController::class, 'index']);
     Route::get('stores/{id}', [StoreController::class, 'show']);
     Route::post('stores/{id}/track', [StoreController::class, 'trackStoreClick']);
