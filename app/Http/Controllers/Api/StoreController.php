@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ApiResponse;
 use App\Models\Store;
 use App\Models\StoresCategories;
+use App\Models\banners;
 use App\Models\ClickLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -102,6 +103,7 @@ class StoreController extends Controller
 
       public function getHomepageData(Request $request)
     {
+        Cache::forget('homepage_data');
         // Cache the response for 10 minutes
         $data = Cache::remember('homepage_data', 600, function () {
             // Fetch store categories (active and homepage visible)
@@ -114,12 +116,20 @@ class StoreController extends Controller
 
             // Fetch top cashback providers
             $topCashbackStores =(new Store)->getTopCashbackStores();
+            
+            $newBanner = (new banners);
+            $banners1 = $newBanner->getBannerByBannerCategoryId("1");
+            $banners2 = $newBanner->getBannerByBannerCategoryId("2");
+            $banners3 = $newBanner->getBannerByBannerCategoryId("3");
 
             return [
                 'store_categories' => $categories,
                 'popular_stores' => $popularStores,
                 'trending_stores' => $trendingStores,
                 'top_cashback_providers' => $topCashbackStores,
+                'banner1' => $banners1,
+                'banner2' => $banners2,
+                'banner3' => $banners3,
             ];
         });
 

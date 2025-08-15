@@ -257,7 +257,7 @@
 
                         <li class="nav-item">
                             <a href="Users" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
+                                <i class="nav-icon fas fa-users"></i>
                                 <p>
                                     User List
                                     <!-- <i class="fas fa-angle-left right"></i> -->
@@ -266,9 +266,9 @@
 
                         </li>
 
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
+                                <i class="nav-icon fas fa-image"></i> <!-- Fixed icon -->
                                 <p>
                                     Banners
                                     <i class="fas fa-angle-left right"></i>
@@ -276,84 +276,53 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-
                                     <a href="bannerlist?id=1" class="nav-link">
-
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Banner 1</p>
                                     </a>
-
                                 </li>
-
-
-                            </ul>
-
-                            <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="bannerlist?id=2" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Banner 2</p>
-
                                     </a>
                                 </li>
-
-
-                            </ul>
-
-                            <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="bannerlist?id=3" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Banner3</p>
+                                        <p>Banner 3</p>
                                     </a>
                                 </li>
-
-
                             </ul>
-
-                           
-
-
                         </li>
-
-
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
+                                <i class="nav-icon fas fa-store"></i> <!-- Store icon for Mini Apps -->
                                 <p>
-                                    Mini Apps
+                                    Stores
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="MiniAppCategoryList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-layer-group nav-icon"></i> <!-- Icon for 'Category' -->
                                         <p>Category</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="MiniAppSubCategoryList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>sub-categories</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a href="MiniAppList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Mini Apps List</p>
+                                        <i class="fas fa-th-list nav-icon"></i> <!-- Icon for 'Mini Apps List' -->
+                                        <p>Stores List</p>
                                     </a>
                                 </li>
-
                             </ul>
                         </li>
-
-
                         
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
+                                <i class="nav-icon fas fa-receipt"></i> <!-- Corrected icon -->
                                 <p>
                                     Transactions
                                     <i class="fas fa-angle-left right"></i>
@@ -362,55 +331,51 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="MiniApptransaction" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>MiniApp Txn List</p>
+                                        <i class="fas fa-store nav-icon"></i>
+                                        <p>Stores Transactions</p>
                                     </a>
                                 </li>
-
-                                
                             </ul>
                         </li>
 
                         
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
+                                <i class="nav-icon fas fa-money-bill-wave"></i> <!-- Corrected icon -->
                                 <p>
-                                Withdrawal
+                                    Withdrawal
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    
-                                <a href="WithdrawalList?status=pending" class="nav-link"  name="status" value="0">
-                                        <i class="far fa-circle nav-icon"></i>
+                                    <a href="WithdrawalList?status=pending" class="nav-link">
+                                        <i class="fas fa-hourglass-half nav-icon"></i>
                                         <p>Withdrawal Pending</p>
                                     </a>
-                                   
-
-                                    <a href="WithdrawalList?status=approved" class="nav-link"  name="status" value="1">
-                                        <i class="far fa-circle nav-icon"></i>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="WithdrawalList?status=approved" class="nav-link">
+                                        <i class="fas fa-check nav-icon"></i>
                                         <p>Withdrawal Completed</p>
                                     </a>
-
-                                    <a href="WithdrawalList?status=rejected" class="nav-link"  name="status" value="2">
-                                        <i class="far fa-circle nav-icon"></i>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="WithdrawalList?status=rejected" class="nav-link">
+                                        <i class="fas fa-times-circle nav-icon"></i>
                                         <p>Withdrawal Rejected</p>
                                     </a>
                                 </li>
-
-                                
                             </ul>
                         </li>
 
                         
                         
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
+                                <i class="nav-icon fas fa-bell"></i> <!-- Corrected icon -->
                                 <p>
-                                Notifications
+                                    Notifications
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
@@ -420,19 +385,15 @@
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Notification List</p>
                                     </a>
-
-                                  
                                 </li>
-
-                                
                             </ul>
                         </li>
 
 
 
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
+                                <i class="nav-icon fas fa-gamepad"></i> <!-- Updated icon -->
                                 <p>
                                     Games
                                     <i class="fas fa-angle-left right"></i>
@@ -441,99 +402,27 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="GamesCategoryList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-layer-group nav-icon"></i>
                                         <p>Category</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <!-- <li class="nav-item">
                                     <a href="GamesSubCategoryList" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>sub-categories</p>
+                                        <p>Sub-categories</p>
                                     </a>
-                                </li>
+                                </li> -->
                                 <li class="nav-item">
                                     <a href="GamesList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-th-list nav-icon"></i>
                                         <p>Games List</p>
                                     </a>
                                 </li>
-
                             </ul>
                         </li>
 
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
-                                <p>
-                                    Loot Offers
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="lootOfferList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Loot Offers List</p>
-                                    </a>
-                                </li>
 
-                                <li class="nav-item">
-                                    <a href="lootOfferList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Loot Offers Banner</p>
-                                    </a>
-                                </li>
-                                
-                            </ul>
-                        </li>
-                        
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
-                                <p>
-                                    Loot Products
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="lootProductList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Loot Products List</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
-                                <p>
-                                    Offers
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="offerlist" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Offers List</p>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a href="lootOfferList" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Offers Banner</p>
-                                    </a>
-                                </li>
-                                
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-ticket-alt"></i>
                                 <p>
@@ -544,66 +433,24 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="adminTicketList?status=open" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-folder-open nav-icon"></i>  <!-- Open -->
                                         <p>Open Ticket</p>
                                     </a>
                                 </li>
-                                 <li class="nav-item">
+                                <li class="nav-item">
                                     <a href="adminTicketList?status=in_progress" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-spinner fa-spin nav-icon"></i>  <!-- In Progress -->
                                         <p>In Progress Ticket</p>
                                     </a>
                                 </li>
-                                 <li class="nav-item">
+                                <li class="nav-item">
                                     <a href="adminTicketList?status=resolved" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-check-circle nav-icon"></i>  <!-- Resolved -->
                                         <p>Resolved Ticket</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
-                                <p>
-                                    Transactions
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="MiniApptransaction" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>MiniApp Txn List</p>
-                                    </a>
-                                </li>
-
-                                
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
-                                <p>
-                                    Settings
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="commision_setting" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Commision Setting</p>
-                                    </a>
-                                </li>
-
-                                
-                            </ul>
-                        </li>
-
-
                     </ul>
 
                 </nav>
