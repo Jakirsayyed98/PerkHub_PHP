@@ -13,7 +13,7 @@ class AffiliateProviders extends Migration
             $table->string('name')->unique();
             $table->string('callback_secret')->nullable();
             $table->string('base_url')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

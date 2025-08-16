@@ -296,6 +296,8 @@
                             </ul>
                         </li>
 
+
+
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-store"></i> <!-- Store icon for Mini Apps -->
@@ -307,20 +309,27 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="MiniAppCategoryList" class="nav-link">
-                                        <i class="fas fa-layer-group nav-icon"></i> <!-- Icon for 'Category' -->
+                                        <i class="fas fa-tags nav-icon"></i> <!-- Icon for 'Category' -->
                                         <p>Category</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a href="AffiliateProviders" class="nav-link">
+                                        <i class="fas fa-handshake nav-icon"></i> <!-- Icon for 'Affiliate Providers' -->
+                                        <p>Affiliate Providers</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="MiniAppList" class="nav-link">
-                                        <i class="fas fa-th-list nav-icon"></i> <!-- Icon for 'Mini Apps List' -->
+                                        <i class="fas fa-store-alt nav-icon"></i> <!-- Icon for 'Stores List' -->
                                         <p>Stores List</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                        
-                       <li class="nav-item">
+
+                      
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-receipt"></i> <!-- Corrected icon -->
                                 <p>
@@ -339,7 +348,8 @@
                         </li>
 
                         
-                       <li class="nav-item">
+                      
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-money-bill-wave"></i> <!-- Corrected icon -->
                                 <p>

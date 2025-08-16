@@ -3,12 +3,9 @@
 
 <div class="content-wrapper">
 
-
     <center>
         <h1>MiniApp List</h1>
     </center>
-
- 
 
     <section class="content-header">
         <div class="container-fluid">
@@ -18,118 +15,113 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                    <form action="ExportExcel" method="get">
 
-<button type="submit" class="btn btn-primary" name="id" value="0" style="margin-right:15px;">Export Excel</button>
-</form>
-<form action="UpdateMiniApp" method="get">
-<button type="submit" class="btn btn-primary" name="id" value="0" style="margin-right:15px;">+ Add
-    new</button>
-</form>
+                        <form action="{{ url('ExportExcel') }}" method="get" style="display:inline;">
+                            <button type="submit" class="btn btn-info btn-sm" name="id" value="0" style="margin-right:10px;">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </button>
+                        </form>
+
+                        <form action="{{ url('UpdateMiniApp') }}" method="get" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm" name="id" value="0">
+                                <i class="fas fa-plus-circle"></i> Add New
+                            </button>
+                        </form>
 
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-
 
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
 
+                    <div class="card">
+                        <div class="card-body">
 
-    <div class="card">
-    <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped table-hover">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Popular</th>
+                                        <th>Trending</th>
+                                        <th>Top Cashback</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
 
-        <table id="example1" class="table table-bordered table-striped">
-            <thead bac>
-                <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">name</th>
-                    <th scope="col">Campaign Provider</th>
-                    <th scope="col">Icon</th>
-                    <th scope="col">Logo</th>
-                    <th scope="col">Banner</th>
-                    <th scope="col">popular</th>
+                                <tbody>
+                                @if(isset($records))
+                                    @foreach($records as $item)
+                                        <tr>
+                                            <td>{{ $item->id }}</td>
+                                            <td style="width:200px">{{ $item->name }}</td>
+                                           
+                                            <td>
+                                                <form method="get" action="{{ url('popularActiveDeactive') }}">
+                                                    <button class="btn btn-sm {{ $item->popular == '1' ? 'btn-danger' : 'btn-warning' }}" 
+                                                            type="submit" name="id" value="{{ $item->id }}">
+                                                        {{ $item->popular == '1' ? 'Deactivate' : 'Activate' }}
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <form method="get" action="{{ url('trendingActiveDeactive') }}">
+                                                    <button class="btn btn-sm {{ $item->trending == '1' ? 'btn-danger' : 'btn-warning' }}" 
+                                                            type="submit" name="id" value="{{ $item->id }}">
+                                                        {{ $item->trending == '1' ? 'Deactivate' : 'Activate' }}
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <form method="get" action="{{ url('top_cashbackActiveDeactive') }}">
+                                                    <button class="btn btn-sm {{ $item->top_cashback == '1' ? 'btn-danger' : 'btn-warning' }}" 
+                                                            type="submit" name="id" value="{{ $item->id }}">
+                                                        {{ $item->top_cashback == '1' ? 'Deactivate' : 'Activate' }}
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                 <form method="get" action="{{ url('miniAppActiveDeactive') }}" style="display:inline;">
+                                                    <button class="btn btn-sm {{ $item->status == '1' ? 'btn-danger' : 'btn-success' }}" 
+                                                            type="submit" name="id" value="{{ $item->id }}">
+                                                        {{ $item->status == '1' ? 'Deactivate' : 'Activate' }}
+                                                    </button>
+                                                </form>
+                                            </td>
 
-                    <th scope="col">trending</th>
-                    <th scope="col">top_cashback</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
+                                            <td>
+                                                <form method="get" action="{{ url('UpdateMiniApp') }}" style="display:inline;">
+                                                    <button class="btn btn-primary btn-sm" type="submit" name="id" value="{{ $item->id }}">
+                                                        <i class="fas fa-edit"></i> Update
+                                                    </button>
+                                                </form>
 
-            @if(isset($records))
-            @foreach($records as $item)
+                                                <form method="get" action="{{ url('deleteProcess') }}" style="display:inline;">
+                                                    <button class="btn btn-danger btn-sm" type="submit" name="id" value="{{ $item->id }}">
+                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                    </button>
+                                                </form>
 
-            <tr>
-                <th  scope="row">{{$item->id}}</th>
+                                               
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                                </tbody>
 
-                <td style="width:200px">{{$item->name}}</td>
+                            </table>
 
-                <td style="width:100px"><center>@if($item->macro_publisher=="1") CueLinks @else Inr Deals @endif</center></td>
+                        </div>
+                    </div>
 
-                <td>
-                <img src="{{ asset('upload/images/'.$item->icon) }}" width="90px"
-                                    height="70px"></img>
-                </td>
-
-                <td>
-                <img src="{{ asset('upload/images/'.$item->logo) }}" width="90px"
-                                    height="70px"></img>
-                </td>
-
-                <td>
-                <img src="{{ asset('upload/images/'.$item->banner) }}" width="150px"
-                                    height="70px"></img>
-                </td>
-               
-
-                <form method="get">
-
-                    <td><button style="margin-left:15px;background-color:red" formaction="popularActiveDeactive"
-                            class="btn btn-primary" type="submit" name="id"
-                            value="{{$item->id}}">{{$item->popular == '1' ? 'Deactive' : 'Active'}}</button></td>
-                    <td><button style="margin-left:15px;background-color:red" formaction="trendingActiveDeactive"
-                            class="btn btn-primary" type="submit" name="id"
-                            value="{{$item->id}}">{{$item->trending == '1' ? 'Deactive' : 'Active'}}</button></td>
-                    <td><button style="margin-left:15px;background-color:red" formaction="top_cashbackActiveDeactive"
-                            class="btn btn-primary" type="submit" name="id"
-                            value="{{$item->id}}">{{$item->top_cashback == '1' ? 'Deactive' : 'Active'}}</button></td>
-
-
-
-                    <th>
-                        <button type="submit" formaction="UpdateMiniApp" class="btn btn-primary" name="id"
-                            value="{{$item->id}}">Update</button>
-                        <button style="margin-left:15px;background-color:red" formaction="deleteProcess"
-                            class="btn btn-primary" name="id" type="Delete" value="{{$item->id}}">Delete</button>
-                        <button style="margin-left:15px;background-color:red" formaction="miniAppActiveDeactive"
-                            class="btn btn-primary" type="submit" name="id"
-                            value="{{$item->id}}">{{$item->status == '1' ? 'Deactive' : 'Active'}}</button>
-
-                    </th>
-
-                </form>
-
-            </tr>
-            @endforeach
-
-            @endif
-
-
-
-        </table>
-      
-        </div>
-        </div>
-
-        </div>
-                <!-- /.col -->
+                </div>
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
     </section>
-    @endsection
+@endsection

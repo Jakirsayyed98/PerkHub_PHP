@@ -56,6 +56,13 @@ Route::post('/AddOrUpdateCategoriesProcess',[MiniAppCategoryController::class,'A
 Route::get('/ActiveDeactive',[MiniAppCategoryController::class,'ActiveDeactive']);
 Route::get('/ActiveDeactivehomePageVis',[MiniAppCategoryController::class,'ActiveDeactivehomePageVis']);
 
+// Affiliate Providers
+Route::get('/AffiliateProviders',[AffiliateController::class,'getAffiliateProviders']);
+Route::get('/AffiliateAddOrUpdate',[AffiliateController::class,'AffiliateAddOrUpdate']);
+Route::post('/AffiliateAddOrUpdateProcess',[AffiliateController::class,'AffiliateAddOrUpdateProcess']);
+Route::get('/ActiveDeactiveAffiliate',[AffiliateController::class,'ActiveDeactiveAffiliate']);
+Route::get('/deleteAffiliate',[AffiliateController::class,'deleteAffiliate']);
+
 
 //Sub Categories
 Route::get('/MiniAppSubCategoryList',[MiniAppSubCategoryController::class,'MiniAppsubcategoryList']);

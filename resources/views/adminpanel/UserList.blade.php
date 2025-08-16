@@ -3,108 +3,108 @@
 
 <div class="content-wrapper">
 
+    <!-- Page Header -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 font-weight-bold text-dark">
+                        <i class="fas fa-users mr-2"></i> User List
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="admin"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active">Users</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.content-header -->
 
-    <center>
-        <h1>User List</h1>
-    </center>
 
+    <!-- Main Content -->
     <section class="content">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
 
-
-                    <div class="card">
-                        <div class="card-body">
-
-                            <table id="example1" class="table table-bordered table-striped">
-                                <thead bac>
-                                    <tr>
-                                        <th scope="col">id</th>
-                                        <th scope="col">name</th>
-                                        <th scope="col">email</th>
-                                        <th scope="col">number</th>
-                                        <th scope="col">Pending</th>
-                                        <th scope="col">Verified</th>
-                                        <th scope="col">Rejected</th>
-
-
-                                        <th scope="col">gender</th>
-                                        <th scope="col">status</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-
-                                @if(isset($records))
-                                @foreach($records as $item)
-                                <form method="get">
-                                    <input type="hidden" name="id" value="{{$item->id}}">
-                                    <tr>
-                                        <th style="width:50px" scope="row">{{$item->id}}</th>
-                                        <td style="width:150px">{{$item->name}}</td>
-                                        <td style="width:200px">{{$item->email}}</td>
-                                        <td style="width:250px">{{$item->number}}</td>
-                                        <td style="width:100px">{{$item->pending}}</td>
-                                        <td style="width:100px">{{$item->verified}}</td>
-                                        <td style="width:100px">{{$item->rejected}}</td>
-
-
-                                        @if($item->gender=="male")
-                                        <td style="width:100px">Male</td>
-                                        @elseif($item->gender=="female")
-                                        <td style="width:100px">Female</td>
-                                        @else
-                                        <td style="width:100px">Other</td>
-                                        @endif
-
-                                        @if($item->status=="0")
-                                        <td style="width:100px">Unverified</td>
-                                        @elseif($item->status=="1")
-                                        <td style="width:100px">Verified</td>
-                                        @else
-                                        <td style="width:100px">Block</td>
-                                        @endif
-
-
-
-                                        <td scope="col">
-                                            @if($item->status=="0")
-                                            <button type="submit" formaction="UserBlockUnBlock" class="btn btn-primary"
-                                                name="status" value="{{$item->id}}">Block</button>
-                                            @elseif($item->status=="1")
-                                            <button type="submit" formaction="UserBlockUnBlock" class="btn btn-primary"
-                                                name="status" value="{{$item->id}}">Block</button>
-                                            @else
-                                            <button type="submit" formaction="UserBlockUnBlock" class="btn btn-primary"
-                                                name="status" value="{{$item->id}}">UnBlock</button>
-                                            @endif
-
-                                            <button style="margin-left:15px;background-color:red" type="submit"
-                                                formaction="UserDelete" class="btn btn-primary" name="Delete"
-                                                value="{{$item->id}}">Delete</button>
-                                        </td>
-
-                                    </tr>
-                                </form>
-                                @endforeach
-
-                                @endif
-
-
-
-                            </table>
-
-                        </div>
-                    </div>
-
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title"><i class="fas fa-user-friends mr-2"></i> Registered Users</h3>
                 </div>
-                <!-- /.col -->
+
+                <div class="card-body">
+                    <table id="example1" class="table table-hover table-bordered table-striped">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Gender</th>
+                                <th>Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(isset($records) && $records->count() > 0)
+                                @foreach($records as $item)
+                                    <form method="get">
+                                        <input type="hidden" name="id" value="{{ $item->id }}">
+                                        <tr>
+                                            <td>{{ $item->id }}</td>
+                                            <td>{{ $item->name }}</td>
+                                            <td>{{ $item->email }}</td>
+                                            <td>{{ $item->mobile }}</td>
+                                            <td>
+                                                @if($item->gender == "male")
+                                                    <span class="badge badge-primary">Male</span>
+                                                @elseif($item->gender == "female")
+                                                    <span class="badge badge-pink">Female</span>
+                                                @else
+                                                    <span class="badge badge-secondary">Other</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($item->status == "0")
+                                                    <span class="badge badge-warning">Unverified</span>
+                                                @elseif($item->status == "1")
+                                                    <span class="badge badge-success">Verified</span>
+                                                @else
+                                                    <span class="badge badge-danger">Blocked</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if($item->status == "0" || $item->status == "1")
+                                                    <button type="submit" formaction="UserBlockUnBlock" class="btn btn-sm btn-warning" name="status" value="{{ $item->id }}">
+                                                        <i class="fas fa-ban"></i> Block
+                                                    </button>
+                                                @else
+                                                    <button type="submit" formaction="UserBlockUnBlock" class="btn btn-sm btn-success" name="status" value="{{ $item->id }}">
+                                                        <i class="fas fa-unlock"></i> Unblock
+                                                    </button>
+                                                @endif
+
+                                                <button type="submit" formaction="UserDelete" class="btn btn-sm btn-danger ml-2" name="Delete" value="{{ $item->id }}">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </form>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">No users found</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <!-- /.row -->
+
         </div>
-        <!-- /.container-fluid -->
     </section>
+    <!-- /.content -->
 
-
-
-    @endsection
+</div>
+@endsection

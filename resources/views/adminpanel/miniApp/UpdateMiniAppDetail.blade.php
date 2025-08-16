@@ -1,355 +1,190 @@
 @extends('adminpanel.layout.main')
 @section('main-container')
 
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+    <!-- Content Header -->
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>General Form</h1>
+                    <h1>Manage Mini App</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">General Form</li>
+                        <li class="breadcrumb-item"><a href="{{ url('/admin/dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Mini App Form</li>
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <!-- left column -->
-                <div class="col-md-6">
-                    <!-- general form elements -->
-                    <div class="card card-primary">
+                <!-- Left column -->
+                <div class="col-md-8 offset-md-2">
+                    <div class="card card-primary shadow-sm">
                         <div class="card-header">
-                            <h3 class="card-title">Add / Update</h3>
+                            <h3 class="card-title">Add / Update Mini App</h3>
                         </div>
-                        <!-- /.card-header -->
-                        <!-- form start -->
 
-
-                        <form action="updateProcess" method="post" enctype="multipart/form-data">
+                        <!-- Form Start -->
+                        <form action="{{ url('updateProcess') }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="card-body">
+
+                                <!-- Name -->
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Name</label>
-                                    <input type="hidden" name="id" value="{{$records->id ?? '0'}}">
-                                    <input type="name" class="form-control" value="{{$records->name ?? ''}}" name="name"
-                                        placeholder="Enter name">
+                                    <label for="name">App Name <span class="text-danger">*</span></label>
+                                    <input type="hidden" name="id" value="{{ $records->id ?? '0' }}">
+                                    <input type="text" id="name" class="form-control" name="name"
+                                           value="{{ $records->name ?? '' }}" placeholder="Enter app name" required>
                                 </div>
 
-
-                                <!-- /.form-group -->
+                                <!-- Category -->
                                 <div class="form-group">
-                                    <label>Select Category</label>
-
-                                    <select class="form-control select2" style="width: 100%;" name="category_id">
-                                        @if($records)
-                                        @if($records->miniapp_category_id=="0")
-                                        <option value="0" selected="selected">Please select category</option>
-                                        @endif
-
+                                    <label for="category_id">Category <span class="text-danger">*</span></label>
+                                    <select class="form-control select2" id="category_id" name="category_id" required>
+                                        <option value="0">Please select category</option>
                                         @foreach($category as $item)
-                                        @if($records->miniapp_category_id==$item->id)
-                                        <option value="{{$item->id}}" selected="selected">{{$item->name}}</option>
-                                        @else
-                                        <option value="{{$item->id}}">{{$item->name}}</option>
-                                        @endif
+                                            <option value="{{ $item->id }}"
+                                                {{ isset($records) && $records->miniapp_category_id == $item->id ? 'selected' : '' }}>
+                                                {{ $item->name }}
+                                            </option>
                                         @endforeach
+                                    </select>
+                                </div>
 
-                                        @else
-                                        <option value="0" selected="selected">Please select category</option>
-                                        @foreach($category as $item)
-                                        <option value="{{$item->id}}">{{$item->name}}</option>
+                                <!-- URL Type -->
+                                <div class="form-group">
+                                    <label for="url_type">URL Type</label>
+                                    <select class="form-control select2" id="url_type" name="url_type">
+                                        <option value="0" {{ empty($records) || $records->url_type == "0" ? 'selected' : '' }}>Please select</option>
+                                        <option value="1" {{ isset($records) && $records->url_type == "1" ? 'selected' : '' }}>Inside</option>
+                                        <option value="2" {{ isset($records) && $records->url_type == "2" ? 'selected' : '' }}>Outside</option>
+                                    </select>
+                                </div>
+
+                                <!-- Affiliate Provider -->
+                                <div class="form-group">
+                                    <label for="macro_publisher">Affiliate Provider</label>
+                                    <select class="form-control select2" id="macro_publisher" name="macro_publisher">
+                                        <option value="0">Please select Provider</option>
+                                        @foreach($affiliate_partner as $affiliate)
+                                            <option value="{{ $affiliate->id }}"
+                                                {{ isset($records) && $records->macro_publisher == $affiliate->id ? 'selected' : '' }}>
+                                                {{ $affiliate->name }}
+                                            </option>
                                         @endforeach
-                                        @endif
                                     </select>
                                 </div>
 
-                              
-
+                                <!-- Cashback Active -->
                                 <div class="form-group">
-                                    <label>Select url type</label>
-                                    <select class="form-control select2" style="width: 100%;" name="url_type">
-                                        @if($records)
-                                        @if($records->url_type=="2")
-                                        <option value="1">Inside</option>
-                                        <option value="2" selected="selected">Outside</option>
-
-
-                                        @elseif($records->url_type=="1")
-                                        <option value="1" selected="selected">Inside</option>
-                                        <option value="2">Outside</option>
-                                        @else
-                                        <option value="0" selected="selected">Please select url type</option>
-                                        <option value="1">Inside</option>
-                                        <option value="2">Outside</option>
-
-                                        @endif
-                                        @else
-                                        <option value="0" selected="selected">Please select url type</option>
-                                        <option value="1">Inside</option>
-                                        <option value="2">Outside</option>
-
-                                        @endif
-                                    </select>
-
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Select macro_publisher</label>
-                                    <select class="form-control select2" style="width: 100%;" name="macro_publisher">
-                                        @if($records)       
-                                               
-                                            @if($records->macro_publisher=="0")
-                                                <option value="0" selected="selected">Please select Provider</option>
-                                                @foreach($affiliate_partner as $affiliate)
-                                                <option value="{{$affiliate->id}}">{{$affiliate->name }}</option>
-                                                @endforeach
-                                            @else
-
-                                                @foreach($affiliate_partner as $affiliate)
-                                                    @if($records->macro_publisher == $affiliate->id)
-                                                    <option value="{{$affiliate->id}}" selected="selected">{{$affiliate->name}}</option>
-                                                    @else
-                                                    <option value="{{$affiliate->id}}">{{$affiliate->name }}</option>
-                                                    @endif
-                                                @endforeach
-
-                                            @endif
-
-                                        @else    
-
-                                            <option value="0" selected="selected">Please select Provider</option>
-
-                                            @foreach($affiliate_partner as $affiliate)
-                                            <option value="{{$affiliate->id}}">{{$affiliate->name }}</option>
-                                            @endforeach
-
-                                        @endif
-
+                                    <label for="cb_active">Cashback Status</label>
+                                    <select class="form-control select2" id="cb_active" name="cb_active">
+                                        <option value="2" {{ empty($records) ? 'selected' : '' }}>Please select</option>
+                                        <option value="1" {{ isset($records) && $records->cb_active == "1" ? 'selected' : '' }}>Active</option>
+                                        <option value="0" {{ isset($records) && $records->cb_active == "0" ? 'selected' : '' }}>Inactive</option>
                                     </select>
                                 </div>
 
-
-                                
-
+                                <!-- Cashback Percentage -->
                                 <div class="form-group">
-                                    <label>Select cb active type</label>
-                                    <select class="form-control select2" style="width: 100%;" name="cb_active">
-
-                                        @if($records)
-
-
-
-                                        @if($records->cb_active=="0")
-                                        <option value="0" selected="selected">Deactive</option>
-                                        <option value="1">Active</option>
-
-                                        @elseif($records->cb_active=="1")
-                                        <option value="0">Deactive</option>
-                                        <option value="1" selected="selected">Active</option>
-
-                                        @else
-                                        <option value="2" selected="selected">Please select cb active type</option>
-                                        <option value="0">Deactive</option>
-                                        <option value="1">Active</option>
-                                        @endif
-
-                                        @else
-                                        <option value="2" selected="selected">Please select cb active type</option>
-                                        <option value="0">Deactive</option>
-                                        <option value="1">Active</option>
-                                        @endif
-
-                                    </select>
-
+                                    <label for="cb_percentage">Cashback Percentage</label>
+                                    <input type="number" step="0.01" id="cb_percentage" class="form-control"
+                                           name="cb_percentage" value="{{ $records->cb_percentage ?? '' }}"
+                                           placeholder="Enter cashback percentage">
                                 </div>
 
-
+                                <!-- Description -->
                                 <div class="form-group">
-                                    <label for="exampleInputPassword1">Cashback Percentage</label>
-
-                                    <input type="text" class="form-control" id=""
-                                        value="{{$records->cb_percentage  ?? ''}} "
-                                        placeholder="Enter Cashback Percentage" name="cb_percentage">
+                                    <label for="description">Description</label>
+                                    <textarea id="description" class="form-control" name="description" rows="3"
+                                              placeholder="Write a short description">{{ $records->description ?? '' }}</textarea>
                                 </div>
 
-
-                                <!-- 
+                                <!-- About Brand -->
                                 <div class="form-group">
-                                    <label for="exampleInputPassword1">description</label>
-                                    <input type="text" class="form-control" id=""
-                                        value="{{$records->description  ?? ''}} " placeholder="Enter description"
-                                        name="description">
-                                </div> -->
-
-                                <div class="form-group">
-                                    <label for="exampleInputPassword1">Description</label>
-                                    <textarea id="compose-textarea" class="form-control" style="height: 300px"
-                                        name="description">
-                                {{$records->description  ?? ''}}
-                                </textarea>
+                                    <label for="about">About Brand</label>
+                                    <input type="text" id="about" class="form-control" name="about"
+                                           value="{{ $records->about ?? '' }}" placeholder="Enter About Brand">
                                 </div>
 
-
+                                <!-- How it works -->
                                 <div class="form-group">
-                                    <label for="exampleInputPassword1">About Brand</label>
-                                    <input type="text" class="form-control" id="" value="{{$records->about  ?? ''}} "
-                                        placeholder="Enter About brand" name="about">
+                                    <label for="work">How it works</label>
+                                    <input type="text" id="work" class="form-control" name="work"
+                                           value="{{ $records->howitswork ?? '' }}" placeholder="Explain how it works">
                                 </div>
 
+                                <!-- URL -->
                                 <div class="form-group">
-                                    <label for="exampleInputPassword1">How it's work's</label>
-                                    <input type="text" class="form-control" id=""
-                                        value="{{$records->howitswork  ?? ''}} " placeholder="Enter How does it work"
-                                        name="work">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputPassword1">url</label>
-                                    <input type="text" class="form-control" id="" value="{{$records->url  ?? ''}} "
-                                        placeholder="Enter Url" name="url">
+                                    <label for="url">App URL</label>
+                                    <input type="url" id="url" class="form-control" name="url"
+                                           value="{{ $records->url ?? '' }}" placeholder="https://example.com">
                                 </div>
 
+                                <!-- Label -->
                                 <div class="form-group">
-                                    <label for="exampleInputPassword1">label</label>
-
-                                    <input type="text" class="form-control" id="" value="{{$records->label ?? ''}} "
-                                        placeholder="Enter label" name="label">
+                                    <label for="label">Label</label>
+                                    <input type="text" id="label" class="form-control" name="label"
+                                           value="{{ $records->label ?? '' }}" placeholder="Enter label/tag">
                                 </div>
 
-                                <!-- For Make Mandotory Image an dFor Multiple Images
-                                <input type="file" id="file-upload" name="icon" multiple required />
--->
-
+                                <!-- Upload Fields -->
                                 <div class="form-group">
-                                    <label for="exampleInputFile">Upload Icon </label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" id="file-upload" name="icon" />
-
+                                    <label>Upload Icon</label>
+                                    <input type="file" name="icon" class="form-control-file">
+                                    @if($records && $records->icon)
+                                        <div class="mt-2">
+                                            <img src="{{ asset('upload/images/'.$records->icon) }}" width="70" height="70" class="img-thumbnail">
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
-
-
-                                <!-- <div class="form-group">
-                                    <label for="exampleInputFile">Upload Icon</label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" class="custom-file-input" id="exampleInputFile"
-                                                name="icon">
-                                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                                        </div>
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">Upload</span>
-                                        </div>
-                                    </div>
-                                </div> -->
-                                @if($records)
-                                <img src="{{ asset('upload/images/'.$records->icon) }}" width="70px"
-                                    height="70px"></img>
-                                @endif
-
 
                                 <div class="form-group">
-                                    <label for="exampleInputFile">Upload logo </label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" id="file-upload" name="logo" />
-
+                                    <label>Upload Logo</label>
+                                    <input type="file" name="logo" class="form-control-file">
+                                    @if($records && $records->logo)
+                                        <div class="mt-2">
+                                            <img src="{{ asset('upload/images/'.$records->logo) }}" width="90" height="70" class="img-thumbnail">
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
-
-
-                                @if($records)
-                                <img src="{{ asset('upload/images/'.$records->logo) }}" width="90px"
-                                    height="70px"></img>
-                                @endif
 
                                 <div class="form-group">
-                                    <label for="exampleInputFile">Upload banner </label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" id="file-upload" name="banner" />
-
+                                    <label>Upload Banner</label>
+                                    <input type="file" name="banner" class="form-control-file">
+                                    @if($records && $records->banner)
+                                        <div class="mt-2">
+                                            <img src="{{ asset('upload/images/'.$records->banner) }}" width="150" height="70" class="img-thumbnail">
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
 
+                                <!-- Cashback Terms -->
+                                <div class="form-group">
+                                    <label for="cashback_terms">Cashback Terms</label>
+                                    <textarea id="cashback_terms" class="form-control" name="cashback_terms" rows="4"
+                                              placeholder="Enter cashback terms">{{ $records->cashback_terms ?? '' }}</textarea>
+                                </div>
 
-                                @if($records)
-                                <img src="{{ asset('upload/images/'.$records->banner) }}" width="150px"
-                                    height="70px"></img>
-                                @endif
-
-
-                                <!-- <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                  </div> -->
                             </div>
 
-
-                            <!-- /.col -->
-
-                            <div class="form-group">
-                                <textarea id="compose-textarea1" class="form-control" style="height: 300px"
-                                    name="cashback_terms">
-                                {{$records->cashback_terms  ?? ''}}
-                                </textarea>
+                            <!-- Submit -->
+                            <div class="card-footer text-right">
+                                <button type="submit" class="btn btn-success px-4">Save</button>
+                                <a href="{{ url()->previous() }}" class="btn btn-secondary">Cancel</a>
                             </div>
-
-                            <!-- /.col -->
-
-
-                            <!-- /.card-body -->
-
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-
                         </form>
-
-
-
-
-
                     </div>
-                    <!-- /.card -->
-
-
-                    <!-- /.card -->
-
                 </div>
-                <!--/.col (left) -->
-                <!-- right column -->
-
-                <!--/.col (right) -->
+                <!-- /.col -->
             </div>
-            <!-- /.row -->
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
-
-
-<!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-</aside>
-<!-- /.control-sidebar -->
-</div>
-
-<!-- ./wrapper -->
-
 @endsection
