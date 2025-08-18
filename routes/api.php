@@ -48,9 +48,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('user/profile', [UserController::class, 'updateProfile']);
     Route::get('/homepage-data', [StoreController::class, 'getHomepageData']);
     Route::get('stores', [StoreController::class, 'index']);
-    Route::get('/stores/by-category', [StoreController::class, 'getStoreByCategory']);
+    Route::post('/stores/by-category', [StoreController::class, 'getStoreByCategory']);
     Route::get('stores/{id}', [StoreController::class, 'show']);
-    Route::post('stores/{id}/track', [StoreController::class, 'trackStoreClick']);
+    Route::post('store/generate-sub-id', [StoreController::class, 'trackStoreClick']);
     Route::get('orders', [OrderController::class, 'index']);
     Route::get('orders/{id}', [OrderController::class, 'show']);
     Route::get('wallet/summary', [WalletController::class, 'getWalletSummary']);

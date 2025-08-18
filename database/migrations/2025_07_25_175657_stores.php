@@ -25,7 +25,7 @@ class Stores extends Migration
             $table->string('cashback')->nullable();
             $table->boolean('active')->default(true);
             $table->boolean('status')->default(true);
-            $table->boolean('cd_active')->default(true);
+            $table->boolean('cb_active')->default(true);
             $table->boolean('top_cashback')->default(false);
             $table->boolean('trending')->default(false);
             $table->boolean('popular')->default(false);

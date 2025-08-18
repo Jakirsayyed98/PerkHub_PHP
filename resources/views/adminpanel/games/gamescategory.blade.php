@@ -3,99 +3,82 @@
 
 <div class="content-wrapper">
 
-
-    <center>
-        <h1>Games Category</h1>
-    </center>
-
-
+    <!-- Page Header -->
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
+            <div class="row mb-2 align-items-center">
                 <div class="col-sm-6">
+                    <h1 class="m-0">Game Categories</h1>
                 </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-
-                        <form method="get">
-
-                            <button type="submit" formaction="AddOrUpdateGameCategories" class="btn btn-primary">+ Add
-                                new</button>
-                            <button type="submit" formaction="RefreshCategory" class="btn btn-primary">Refresh
-                                Category</button>
-                        </form>
-
-                    </ol>
+                <div class="col-sm-6 text-right">
+                    <form method="get" class="d-inline">
+                        <button type="submit" formaction="RefreshCategory" class="btn btn-info">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </form>
+                    <a href="{{ url('AddOrUpdateGameCategories') }}" class="btn btn-success ml-2">
+                        <i class="fas fa-plus"></i> Add New
+                    </a>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
-
-
-
+    <!-- Table Section -->
     <section class="content">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-
-
-                    <div class="card">
-                        <div class="card-body">
-
-                            <table id="example1" class="table table-bordered table-striped">
-                                <thead bac>
-                                    <tr>
-                                        <th scope="col">id</th>
-                                        <th scope="col">name</th>
-                                        <th scope="col">Icon</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-
-                                @if(isset($records))
+            <div class="card shadow-sm">
+                <div class="card-body table-responsive">
+                    <table id="example1" class="table table-bordered table-striped table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th style="width: 60px;">ID</th>
+                                <th>Name</th>
+                                <th style="width: 280px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(isset($records) && count($records) > 0)
                                 @foreach($records as $item)
-
-                                <form method="get">
-                                    <input type="hidden" name="id" value="{{$item->id}}">
                                     <tr>
-                                        <td>{{$item->id}}</td>
-                                        <td>{{$item->name}}</td>
-
+                                        <td>{{ $item->id }}</td>
+                                        <td>{{ $item->name }}</td>
                                         <td>
-                                            <center><img src="{{ asset('upload/images/'.$item->image) }}" width="70px"
-                                                    height="70px"></img></center>
-                                        </td>
-                                        <td><button type="submit" formaction="AddOrUpdateGameCategories"
-                                                class="btn btn-primary" name="Update"
-                                                value="{{$item->id}}">Update</button>
-                                            <button style="margin-left:15px;background-color:red"
-                                                formaction="deleteGameCategory" class="btn btn-primary" type="Delete"
-                                                value="{{$item->id}}">Delete</button>
-                                            <button style="margin-left:15px;background-color:red"
-                                                formaction="ActiveDeactiveGameCategory" class="btn btn-primary"
-                                                type="submit"
-                                                value="{{$item->id}}">{{$item->status == '1' ? 'Deactive' : 'Active'}}</button>
+                                            <form method="get" class="d-inline">
+                                                <input type="hidden" name="id" value="{{ $item->id }}">
+                                                <button type="submit" formaction="AddOrUpdateGameCategories" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-edit"></i> Update
+                                                </button>
+                                            </form>
+
+                                            <form method="get" class="d-inline">
+                                                <input type="hidden" name="id" value="{{ $item->id }}">
+                                                <button type="submit" formaction="deleteGameCategory" class="btn btn-danger btn-sm"
+                                                        onclick="return confirm('Are you sure you want to delete this category?');">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+                                            </form>
+
+                                            <form method="get" class="d-inline">
+                                                <input type="hidden" name="id" value="{{ $item->id }}">
+                                                <button type="submit" formaction="ActiveDeactiveGameCategory" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-toggle-on"></i>
+                                                    {{ $item->status == '1' ? 'Deactivate' : 'Activate' }}
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
-                                </form>
                                 @endforeach
-                                @endif
-
-
-                            </table>
-
-                        </div>
-                    </div>
-
+                            @else
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No categories found.</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
-                <!-- /.col -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
     </section>
-
-
-
-    @endsection
+</div>
+@endsection

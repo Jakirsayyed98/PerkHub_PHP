@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();  // Primary key
             $table->string('name');  // User's name
             $table->string('description')->nullable();  // Profile color
+            $table->boolean('status')->default(true);
             $table->string('image')->nullable();  // Profile color
             $table->string('status')->default(false);;  // Account status (e.g. active, inactive)
             $table->string('homepage_visible')->default(false);;  // Account status (e.g. active, inactive)

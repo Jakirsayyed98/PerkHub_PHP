@@ -23,7 +23,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <!-- Left column -->
+                <!-- Centered column -->
                 <div class="col-md-8 offset-md-2">
                     <div class="card card-primary shadow-sm">
                         <div class="card-header">
@@ -35,10 +35,12 @@
                             @csrf
                             <div class="card-body">
 
+                                <!-- Hidden ID -->
+                                <input type="hidden" name="id" value="{{ $records->id ?? '0' }}">
+
                                 <!-- Name -->
                                 <div class="form-group">
                                     <label for="name">App Name <span class="text-danger">*</span></label>
-                                    <input type="hidden" name="id" value="{{ $records->id ?? '0' }}">
                                     <input type="text" id="name" class="form-control" name="name"
                                            value="{{ $records->name ?? '' }}" placeholder="Enter app name" required>
                                 </div>
@@ -47,10 +49,9 @@
                                 <div class="form-group">
                                     <label for="category_id">Category <span class="text-danger">*</span></label>
                                     <select class="form-control select2" id="category_id" name="category_id" required>
-                                        <option value="0">Please select category</option>
+                                        <option value="">Please select category</option>
                                         @foreach($category as $item)
-                                            <option value="{{ $item->id }}"
-                                                {{ isset($records) && $records->miniapp_category_id == $item->id ? 'selected' : '' }}>
+                                            <option value="{{ $item->id }}" {{ isset($records) && $records->store_category_id == $item->id ? 'selected' : '' }}>
                                                 {{ $item->name }}
                                             </option>
                                         @endforeach
@@ -73,8 +74,7 @@
                                     <select class="form-control select2" id="macro_publisher" name="macro_publisher">
                                         <option value="0">Please select Provider</option>
                                         @foreach($affiliate_partner as $affiliate)
-                                            <option value="{{ $affiliate->id }}"
-                                                {{ isset($records) && $records->macro_publisher == $affiliate->id ? 'selected' : '' }}>
+                                            <option value="{{ $affiliate->id }}" {{ isset($records) && $records->affiliate_provider_id == $affiliate->id ? 'selected' : '' }}>
                                                 {{ $affiliate->name }}
                                             </option>
                                         @endforeach
@@ -94,9 +94,14 @@
                                 <!-- Cashback Percentage -->
                                 <div class="form-group">
                                     <label for="cb_percentage">Cashback Percentage</label>
-                                    <input type="number" step="0.01" id="cb_percentage" class="form-control"
-                                           name="cb_percentage" value="{{ $records->cb_percentage ?? '' }}"
-                                           placeholder="Enter cashback percentage">
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" id="cb_percentage" class="form-control"
+                                               name="cb_percentage" value="{{ $records->cashback ?? '' }}"
+                                               placeholder="Enter cashback percentage">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Description -->
@@ -110,14 +115,14 @@
                                 <div class="form-group">
                                     <label for="about">About Brand</label>
                                     <input type="text" id="about" class="form-control" name="about"
-                                           value="{{ $records->about ?? '' }}" placeholder="Enter About Brand">
+                                           value="{{ $records->about_store ?? '' }}" placeholder="Enter About Brand">
                                 </div>
 
                                 <!-- How it works -->
                                 <div class="form-group">
                                     <label for="work">How it works</label>
                                     <input type="text" id="work" class="form-control" name="work"
-                                           value="{{ $records->howitswork ?? '' }}" placeholder="Explain how it works">
+                                           value="{{ $records->how_its_work ?? '' }}" placeholder="Explain how it works">
                                 </div>
 
                                 <!-- URL -->
@@ -137,47 +142,44 @@
                                 <!-- Upload Fields -->
                                 <div class="form-group">
                                     <label>Upload Icon</label>
-                                    <input type="file" name="icon" class="form-control-file">
-                                    @if($records && $records->icon)
-                                        <div class="mt-2">
-                                            <img src="{{ asset('upload/images/'.$records->icon) }}" width="70" height="70" class="img-thumbnail">
-                                        </div>
-                                    @endif
+                                    <input type="file" name="icon" class="form-control-file" onchange="previewImage(this,'iconPreview')">
+                                    <div class="mt-2">
+                                        <img id="iconPreview" src="{{ $records && $records->icon ? asset('upload/images/'.$records->icon) : '' }}" 
+                                             width="70" height="70" class="img-thumbnail" style="{{ isset($records->icon) ? '' : 'display:none;' }}">
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Upload Logo</label>
-                                    <input type="file" name="logo" class="form-control-file">
-                                    @if($records && $records->logo)
-                                        <div class="mt-2">
-                                            <img src="{{ asset('upload/images/'.$records->logo) }}" width="90" height="70" class="img-thumbnail">
-                                        </div>
-                                    @endif
+                                    <input type="file" name="logo" class="form-control-file" onchange="previewImage(this,'logoPreview')">
+                                    <div class="mt-2">
+                                        <img id="logoPreview" src="{{ $records && $records->logo ? asset('upload/images/'.$records->logo) : '' }}" 
+                                             width="90" height="70" class="img-thumbnail" style="{{ isset($records->logo) ? '' : 'display:none;' }}">
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Upload Banner</label>
-                                    <input type="file" name="banner" class="form-control-file">
-                                    @if($records && $records->banner)
-                                        <div class="mt-2">
-                                            <img src="{{ asset('upload/images/'.$records->banner) }}" width="150" height="70" class="img-thumbnail">
-                                        </div>
-                                    @endif
+                                    <input type="file" name="banner" class="form-control-file" onchange="previewImage(this,'bannerPreview')">
+                                    <div class="mt-2">
+                                        <img id="bannerPreview" src="{{ $records && $records->banner ? asset('upload/images/'.$records->banner) : '' }}" 
+                                             width="150" height="70" class="img-thumbnail" style="{{ isset($records->banner) ? '' : 'display:none;' }}">
+                                    </div>
                                 </div>
 
                                 <!-- Cashback Terms -->
                                 <div class="form-group">
                                     <label for="cashback_terms">Cashback Terms</label>
                                     <textarea id="cashback_terms" class="form-control" name="cashback_terms" rows="4"
-                                              placeholder="Enter cashback terms">{{ $records->cashback_terms ?? '' }}</textarea>
+                                              placeholder="Enter cashback terms">{{ $records->terms_and_conditions ?? '' }}</textarea>
                                 </div>
 
                             </div>
 
                             <!-- Submit -->
                             <div class="card-footer text-right">
-                                <button type="submit" class="btn btn-success px-4">Save</button>
-                                <a href="{{ url()->previous() }}" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-success px-4"><i class="fas fa-save"></i> Save</button>
+                                <a href="{{ url()->previous() }}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -187,4 +189,21 @@
         </div>
     </section>
 </div>
+
+<!-- Image Preview Script -->
+<script>
+    function previewImage(input, previewId) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.getElementById(previewId);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
 @endsection

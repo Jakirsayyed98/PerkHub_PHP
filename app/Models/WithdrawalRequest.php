@@ -55,4 +55,27 @@ class WithdrawalRequest extends Model
     {
         return self::where('status', $status)->get();
     }
+
+    public function getWithdrawalRequestbyId($id)
+    {
+        return self::find($id);
+    }
+  public function UpdateWithdrawalRequest($id, $txnId, $message, $txnTime, $withdrawalStatus)
+{
+    $withdrawal = self::find($id);
+
+    if ($withdrawal) {
+        $withdrawal->update([
+            'txn_id'       => $txnId,
+            'admin_note'   => $message,
+            'processed_at' => $txnTime,   // ✅ matches your DB column
+            'status'       => $withdrawalStatus,
+        ]);
+
+        return true;
+    }
+
+    return false;
+}
+
 }

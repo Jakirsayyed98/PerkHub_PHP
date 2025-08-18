@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+
+    
+
     protected $fillable = [
         'user_id', 'store_id', 'affiliate_provider_id', 'reference_id', 'order_id',
         'order_amount', 'affiliate_commission', 'user_commission', 'user_commission_percent',
@@ -35,11 +38,25 @@ class Order extends Model
             ->paginate($perPage);
     }
 
+    public static function getUserOrdersByStatus($userId, $status)
+    {
+        return self::where('user_id', $userId)
+            ->where('status', $status)
+            ->orderByDesc('transaction_date')
+            ->get();
+    }
+
     public static function getUserOrderById($userId, $orderId)
     {
         return self::with('store:id,name,logo')
             ->where('user_id', $userId)
             ->where('id', $orderId)
+            ->first();
+    }
+
+    public static function getOrderByOrderId($orderId)
+    {
+        return self::where('id', $orderId)
             ->first();
     }
 
@@ -78,10 +95,11 @@ class Order extends Model
         );
     }
 
-    public static function getAllOrders()
-    {
-        return self::all()->sortByDesc('updated_at');
-    }
+   public static function getAllOrders()
+{
+    return self::orderBy('updated_at', 'desc')->get();
+}
+
 
     public static function getAllOrdersByPage($perPage = 10)
     {

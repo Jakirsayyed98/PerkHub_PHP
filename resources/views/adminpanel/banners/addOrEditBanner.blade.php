@@ -1,118 +1,109 @@
 @extends('adminpanel.layout.main')
 @section('main-container')
 
-
-
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+
+    <!-- Page Header -->
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
+            <div class="row mb-2 align-items-center">
                 <div class="col-sm-6">
-                    <h1>Banner Add and Update Form</h1>
+                    <h1 class="m-0">Banner Form</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-                        <li class="breadcrumb-item active">Banner Add and Update Form</li>
+                        <li class="breadcrumb-item active">Add / Update Banner</li>
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <section class="content">
         <div class="container-fluid">
-            <div class="row">
-                <!-- left column -->
-                <div class="col-md-6">
-                    <!-- general form elements -->
-                    <div class="card card-primary">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+
+                    <!-- Banner Form -->
+                    <div class="card card-primary shadow-sm">
                         <div class="card-header">
-                            <h3 class="card-title">Add and Update Banner in Banner {{$bannerType}}</h3>
+                            <h3 class="card-title">
+                                <i class="fas fa-image"></i>
+                                {{ isset($records) ? 'Update Banner' : 'Add New Banner' }} in Banner {{  $records->banner_category_id  }}
+                            </h3>
                         </div>
-                        <!-- /.card-header -->
-                        <!-- form start -->
 
+                       <form action="{{ url('AddOrUpdateBannerProcess') }}" method="post" enctype="multipart/form-data">
+    @csrf
+    <div class="card-body">
 
-                        <form action="AddOrUpdateBannerProcess" method="post" enctype="multipart/form-data">
-                            @csrf
-                            <div class="card-body">
+        <!-- Hidden Fields -->
+        <input type="hidden" name="id" value="{{ $records->id ?? '0' }}">
+        <input type="hidden"  name="banner_type" value="{{  $records->banner_category_id }}">
 
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Name</label>
-                                    <input type="hidden" name="id" value="{{$records->id ?? '0'}}">
-                                    <input type="hidden" name="banner_type" value="{{$bannerType}}">
-                                    <input type="name" class="form-control" value="{{$records->name ?? ''}}" name="name"
-                                        placeholder="Enter name">
-                                </div>
+        <!-- Name -->
+        <div class="form-group">
+            <label for="bannerName">Banner Name <span class="text-danger">*</span></label>
+            <input type="text" id="bannerName" class="form-control" name="name"
+                   value="{{ $records->name ?? '' }}" placeholder="Enter banner name" required>
+        </div>
 
+        <!-- URL -->
+        <div class="form-group">
+            <label for="bannerUrl">Banner URL</label>
+            <input type="url" id="bannerUrl" class="form-control" name="url"
+                   value="{{ $records->url ?? '' }}" placeholder="Enter redirect URL">
+        </div>
 
-                                <div class="form-group">
-                                    <label for="exampleInputPassword1">Url</label>
-                                    <input type="description" class="form-control" id="" name="url" placeholder="url"
-                                        value="{{$records->url ?? ''}} " placeholder="Enter Url" name="description">
-                                </div>
+        <!-- File Upload -->
+        <div class="form-group">
+            <label for="bannerImage">Upload Image</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="bannerImage" name="image" accept="image/*">
+                <label class="custom-file-label" for="bannerImage">Choose file</label>
+            </div>
+        </div>
 
+        <!-- Preview (Existing or New) -->
+        <div class="mt-3">
+            <p>Preview:</p>
+            <img id="previewImage"
+                 src="{{ isset($records->image) ? asset('public/upload/images/'.$records->image) : 'https://via.placeholder.com/200x100?text=No+Image' }}"
+                 class="img-fluid img-thumbnail"
+                 style="max-width: 200px; height: auto;">
+        </div>
+    </div>
 
+    <!-- Submit -->
+    <div class="card-footer text-right">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> {{ isset($records) ? 'Update' : 'Save' }}
+        </button>
+        <a href="{{ url()->previous() }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+</form>
 
-                                <div class="form-group">
-                                    <label for="exampleInputFile">Upload Icon </label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" id="file-upload" name="image" />
-                                        </div>
-                                    </div>
-                                </div>
-                                @if($records)
-                                <img src="{{ asset('public/upload/images/'.$records->image) }}" width="150px"
-                                    height="70px"></img>
-                                @endif
-
-                                <!-- <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                  </div> -->
-                            </div>
-                            <!-- /.card-body -->
-
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </form>
-
-
-
-
+<!-- 🔹 Image Preview Script -->
+<script>
+document.getElementById('bannerImage').addEventListener('change', function(event) {
+    const [file] = event.target.files;
+    if (file) {
+        document.getElementById('previewImage').src = URL.createObjectURL(file);
+    }
+});
+</script>
 
                     </div>
                     <!-- /.card -->
 
-
-                    <!-- /.card -->
-
                 </div>
-                <!--/.col (left) -->
-                <!-- right column -->
-
-                <!--/.col (right) -->
             </div>
-            <!-- /.row -->
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-
-
-<!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-</aside>
-<!-- /.control-sidebar -->
 </div>
 
-<!-- ./wrapper -->
 @endsection

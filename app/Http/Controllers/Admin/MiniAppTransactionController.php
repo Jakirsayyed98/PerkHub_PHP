@@ -125,7 +125,7 @@ class MiniAppTransactionController extends Controller
     }
 
     function UpdateMiniAppTxn(Request $req){
-        $txn = affiliate_transaction::find($req->id)->get();
+        $txn = Order::getOrderByOrderId($req->id);
        return view('adminpanel/transaction/miniApp_transaction_update',['records'=>$txn]);
     }
 

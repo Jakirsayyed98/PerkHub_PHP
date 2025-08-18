@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
@@ -26,20 +26,49 @@ class Transaction extends Model
     {
         return self::with('store:id,name,logo')
             ->where('user_id', $userId)
-            ->orderByDesc('transaction_date')
-            ->paginate($perPage);
+            ->orderByDesc('transaction_date');
     }
 
-    public static function createDebitTransaction($userId, $amount, $reason, $metaData)
+    public static function createDebitTransaction($userId, $amount,  $transactionId)
     {
         return self::create([
             'user_id' => $userId,
-            'type' => 'debit',
+            'type' => 'withdrawal',
             'amount' => $amount,
-            'reason' => $reason,
-            'meta_data' => $metaData,
+            'transaction_id'=>$transactionId,
             'status' => 'approved',
             'transaction_date' => now(),
         ]);
     }
+
+    public static function getTotalOfUserTransactions($userId = null)
+    {
+        $query = self::select(
+            'status',
+            DB::raw("SUM(CASE WHEN type = 'cashback' THEN amount ELSE 0 END) as total_cashback"),
+            DB::raw("SUM(CASE WHEN type = 'withdrawal' THEN amount ELSE 0 END) as total_withdrawal")
+        )
+        ->groupBy('status');
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+
+        $data = $query->get();
+
+        // Format into array [status => [cashback, withdrawal]]
+        $totals = [
+            'pending' => ['cashback' => 0, 'withdrawal' => 0],
+            'approved' => ['cashback' => 0, 'withdrawal' => 0],
+            'rejected' => ['cashback' => 0, 'withdrawal' => 0],
+        ];
+
+        foreach ($data as $row) {
+            $totals[$row->status]['cashback'] = $row->total_cashback;
+            $totals[$row->status]['withdrawal'] = $row->total_withdrawal;
+        }
+
+        return $totals;
+    }
+
 }

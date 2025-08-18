@@ -11,7 +11,7 @@ class Orders extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('store_id')->constrained()->onDelete('cascade');
+            $table->string('store_name');
             $table->foreignId('affiliate_provider_id')->constrained()->onDelete('restrict');
             $table->string('reference_id');
             $table->string('order_id')->nullable();

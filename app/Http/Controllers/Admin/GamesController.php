@@ -74,20 +74,16 @@ class GamesController extends Controller
 
         if(is_null($data)){
             $result =new GamesCategories;
-            $result->name = $name;
+            $result->status = true;
+        }else{
+            $result =GamesCategories::find($req->id);
+        }
+
+         $result->name = $name;
         $result->description = $description;
         $result->heading = $heading;
         $result->image = $image;
         $result->save();
-        }else{
-            $result =GamesCategories::find($req->id);
-            $result->name = $name;
-            $result->description = $description;
-            $result->heading = $heading;
-            $result->image =$data->image; 
-            $result->save();
-        }
-
         
         return redirect('GamesCategoryList');
     }
@@ -108,6 +104,7 @@ class GamesController extends Controller
                 
                         $newdata = new GamesCategories;
                         $newdata->name = $name;
+                        $newdata->status = true;
                         $newdata->save();
                 }
             }

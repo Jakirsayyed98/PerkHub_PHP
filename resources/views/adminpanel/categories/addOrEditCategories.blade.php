@@ -1,129 +1,104 @@
 @extends('adminpanel.layout.main')
 @section('main-container')
 
+<div class="content-wrapper">
 
-
- <!-- Content Wrapper. Contains page content -->
- <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+    <!-- Page Header -->
     <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>General Form</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">General Form</li>
-            </ol>
-          </div>
+        <div class="container-fluid">
+            <div class="row mb-2 align-items-center">
+                <div class="col-sm-6">
+                    <h1 class="m-0">{{ isset($records) ? 'Update' : 'Add' }} Category</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                        <li class="breadcrumb-item active">{{ isset($records) ? 'Update' : 'Add' }} Category</li>
+                    </ol>
+                </div>
+            </div>
         </div>
-      </div><!-- /.container-fluid -->
     </section>
 
-    <!-- Main content -->
+    <!-- Category Form -->
     <section class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <!-- left column -->
-          <div class="col-md-6">
-            <!-- general form elements -->
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Add / Update Categories</h3>
-              </div>
-              <!-- /.card-header -->
-              <!-- form start -->
-  
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
 
-             <form  action="AddOrUpdateCategoriesProcess" method="post" enctype="multipart/form-data">
-                @csrf
-                <div class="card-body">
-                  <div class="form-group">
-                    <label for="exampleInputEmail1">Name</label>
-                    <input type="hidden" name="id" value="{{$records->id ?? '0'}}">
-                    <input type="name" class="form-control"  value="{{$records->name ?? ''}}" name="name" placeholder="Enter name">
-                  </div>
-                  <div class="form-group">
-                    <label for="exampleInputPassword1">description</label>
-                    <input type="description" class="form-control" id="" placeholder="description" value="{{$records->description  ?? ''}} "  placeholder="Enter description" name="description">
-                  </div>
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title">{{ isset($records) ? 'Update' : 'Add' }} Category</h3>
+                        </div>
 
-                  <!-- <div class="form-group">
-                    <label for="exampleInputPassword1">heading</label>
-                    <input type="heading" class="form-control" id="" placeholder="heading" value="{{$records->heading ?? ''}} " placeholder="Enter heading"  name="heading">
-                  </div> -->
+                        <div class="card-body">
+                            <form action="AddOrUpdateCategoriesProcess" method="post" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $records->id ?? 0 }}">
 
-                  <div class="form-group">
-                                    <label for="exampleInputFile">Upload Icon </label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" id="file-upload" name="image"  />
-                                        </div>
-                                    </div>
+                                <!-- Name -->
+                                <div class="form-group">
+                                    <label for="category-name">Name</label>
+                                    <input type="text" class="form-control" id="category-name" name="name"
+                                        placeholder="Enter category name" value="{{ $records->name ?? '' }}" required>
                                 </div>
 
-                  <!-- <div class="form-group">
-                    <label for="exampleInputFile">File input</label>
-                    <div class="input-group">
-                      <div class="custom-file">
-                     <input type="file" class="custom-file-input" id="exampleInputFile" name="image">
-                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                      </div>
-                      <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                      </div>
+                                <!-- Description -->
+                                <div class="form-group">
+                                    <label for="category-description">Description</label>
+                                    <textarea class="form-control" id="category-description" name="description" rows="3"
+                                        placeholder="Enter description">{{ $records->description ?? '' }}</textarea>
+                                </div>
+
+                                <!-- Image Upload -->
+                                <div class="form-group">
+                                    <label for="file-upload">Upload Icon</label>
+                                    <input type="file" class="form-control-file" id="file-upload" name="image" accept="image/*">
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div class="form-group text-center">
+                                    <img id="preview-image" 
+                                        src="{{ isset($records->image) ? asset('upload/images/'.$records->image) : '' }}"
+                                        class="{{ isset($records->image) ? '' : 'd-none' }} img-fluid rounded shadow-sm"
+                                        style="max-width:200px; max-height:120px; object-fit:cover;">
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="form-group text-right">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> {{ isset($records) ? 'Update' : 'Submit' }}
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
                     </div>
-                  </div> -->
 
-                              @if($records)
-                                <img src="{{ asset('upload/images/'.$records->image) }}" width="150px"
-                                    height="70px"></img>
-                                @endif
-
-                  <!-- <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                  </div> -->
                 </div>
-                <!-- /.card-body -->
-
-                <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-              </form>
-
-          
-
-
-
             </div>
-            <!-- /.card -->
-
-           
-            <!-- /.card -->
-
-          </div>
-          <!--/.col (left) -->
-          <!-- right column -->
-        
-          <!--/.col (right) -->
         </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-
-
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
 </div>
 
-<!-- ./wrapper -->
-  @endsection
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file-upload');
+    const preview = document.getElementById('preview-image');
+
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if(file) {
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('d-none');
+        } else {
+            preview.src = '';
+            preview.classList.add('d-none');
+        }
+    });
+});
+</script>
+@endsection

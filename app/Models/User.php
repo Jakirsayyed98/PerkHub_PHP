@@ -25,6 +25,11 @@ class User extends Authenticatable
         'dob' => 'date',
     ];
 
+    public function getUserByUserId($id)
+    {
+        return self::find($id);
+    }
+
     public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class);

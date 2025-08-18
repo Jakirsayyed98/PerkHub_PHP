@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\UserModel;
+use App\Models\User;
 use App\Models\Order;
+use App\Models\Transaction;
 use App\Models\WithdrawalRequest;
 
 class WithdrawalController extends Controller
@@ -21,29 +22,41 @@ class WithdrawalController extends Controller
     function withdrawalstatusupdate(Request $req){
         $id = $req->query('id'); // or $req->id
         
-        $record =(new WithdrawalRequest)->getById($req->id);
+        $record =(new WithdrawalRequest)->getWithdrawalRequestbyId($req->id);
         
-        $usermodel =(new UserModel)->getUserByUserId($record->user_id);
-       
-        $transaction = affiliate_transaction::where('user_id',$record->user_id)->where('transaction_status','1')->get();
+        $usermodel =(new User)->getUserByUserId($record->user_id);
+
+        $transaction = Transaction::getTotalOfUserTransactions($req->id);
+
+        $pendingCashback = $transaction['pending']['cashback'] ?? 0;
+        $approvedCashback = $transaction['approved']['cashback'] ?? 0;
+        $rejectedCashback = $transaction['rejected']['cashback'] ?? 0;
+        $withdrawalAmount = $transaction['withdrawal']['amount'] ?? 0;
+        $transaction = Transaction::getUserTransactions($record->user_id, 'approved');
         // $this->printRawData($transaction);
-        return view('adminpanel/withdrawal/withdrawalstatusupdate',['records'=>$record,'usermodel'=>$usermodel,'transaction'=>$transaction]);
+        return view('adminpanel/withdrawal/withdrawalstatusupdate',['records'=>$record,'usermodel'=>$usermodel,'transaction'=>$transaction,
+            'pendingCashback' => $pendingCashback,
+            'approvedCashback' => $approvedCashback,
+            'rejectedCashback' => $rejectedCashback,
+            'withdrawalAmount' => $withdrawalAmount
+        ]);
     }
 
     function withdrawalstatusupdateProcess(Request $req){
-        $txn_id=$req->txn_id;
-        $message=$req->message;
-        $txn_time=$req->txn_time;
-        $withdrawal_status=$req->withdrawal_status;
-        $withdrawalamount=$req->withdrawalamount;
-        $usermodel =(new UserModel)->getUserByUserId($req->user_id);
+       $txn_id = $req->txn_id;
+    $message = $req->admin_note;
+    $txn_time = $req->txn_time;
+    $withdrawal_status = $req->withdrawal_status;
+    $withdrawalamount = $req->requested_amount;
+       
+        $usermodel =(new User)->getUserByUserId($req->user_id);
         if (!$usermodel) {
             return back()->with('error', 'User not found.');
         }
        
         // Now it's safe to use:
         $token = $usermodel->FCMtoken ?? "";
-        $records =(new WithdrawalRequest)->getById($req->id);
+        $records =(new WithdrawalRequest)->getWithdrawalRequestbyId($req->id);
         if (!$records) {
             // Handle the error, e.g.:
             return back()->with('error', 'Withdrawal request not found.');
@@ -55,17 +68,23 @@ class WithdrawalController extends Controller
             return back()->with('error', 'Failed to update withdrawal request.');
         }
 
-        if($withdrawal_status=="1"){ 
-            $title="Your withdrawal of ₹".$withdrawalamount ." has been Completed";
-            $body = "Your balance will credit to your account within 24hrs";
-            $image = '';
-            $this->sendNotification($token,$title,$body,$image,"2",$req->user_id);
-        } else if($withdrawal_status=="2") {
-            $title="Your withdrawal of ₹".$withdrawalamount ." has been Rejected";
-            $body = "Because ".$message;
-            $image = '';
-            $this->sendNotification($token,$title,$body,$image,"2",$req->user_id);
-        }
+        
+        
+        if ($withdrawal_status == "approved") {
+            $txn = (new Transaction)->createDebitTransaction($req->user_id, $withdrawalamount, $req->id);
+        } 
+
+        // if($withdrawal_status=="approved"){ 
+        //     $title="Your withdrawal of ₹".$withdrawalamount ." has been Completed";
+        //     $body = "Your balance will credit to your account within 24hrs";
+        //     $image = '';
+        //     $this->sendNotification($token,$title,$body,$image,"2",$req->user_id);
+        // } else if($withdrawal_status=="rejected") {
+        //     $title="Your withdrawal of ₹".$withdrawalamount ." has been Rejected";
+        //     $body = "Because ".$message;
+        //     $image = '';
+        //     $this->sendNotification($token,$title,$body,$image,"2",$req->user_id);
+        // }
        
        
         return redirect('WithdrawalList?status=pending')->with('success', 'Withdrawal request updated successfully.');

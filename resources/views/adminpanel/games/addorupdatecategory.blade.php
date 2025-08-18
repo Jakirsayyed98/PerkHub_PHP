@@ -1,119 +1,119 @@
 @extends('adminpanel.layout.main')
 @section('main-container')
 
-
-
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+
+    <!-- Page Header -->
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
+            <div class="row mb-2 align-items-center">
                 <div class="col-sm-6">
-                    <h1>General Form</h1>
+                    <h1 class="m-0">Game Categories</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">General Form</li>
+                        <li class="breadcrumb-item"><a href="{{ url('dashboard') }}">Home</a></li>
+                        <li class="breadcrumb-item active">
+                            {{ isset($records) && $records->id ? 'Update Category' : 'Add New Category' }}
+                        </li>
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <section class="content">
         <div class="container-fluid">
-            <div class="row">
-                <!-- left column -->
-                <div class="col-md-6">
-                    <!-- general form elements -->
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Add / Update Games Categories</h3>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+
+                    <!-- Card -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-gamepad"></i>
+                                {{ isset($records) && $records->id ? 'Update Game Category' : 'Add New Game Category' }}
+                            </h3>
                         </div>
-                        <!-- /.card-header -->
-                        <!-- form start -->
 
-
-                        <form action="AddOrUpdateGameCategoriesProcess" method="post" enctype="multipart/form-data">
+                        <form action="{{ url('AddOrUpdateGameCategoriesProcess') }}" method="POST" enctype="multipart/form-data">
                             @csrf
+                            <input type="hidden" name="id" value="{{ $records->id ?? 0 }}">
+
                             <div class="card-body">
+
+                                <!-- Name -->
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Name</label>
-                                    <input type="hidden" name="id" value="{{$records->id ?? '0'}}">
-                                    <input type="name" class="form-control" value="{{$records->name ?? ''}}" name="name"
-                                        placeholder="Enter name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputPassword1">description</label>
-                                    <input type="description" class="form-control" id="" placeholder="description"
-                                        value="{{$records->description  ?? ''}} " placeholder="Enter description"
-                                        name="description">
+                                    <label for="name">Category Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="name" class="form-control" name="name"
+                                           value="{{ $records->name ?? '' }}" placeholder="Enter category name" required>
                                 </div>
 
+                                <!-- Description -->
                                 <div class="form-group">
-                                    <label for="exampleInputPassword1">heading</label>
-                                    <input type="heading" class="form-control" id="" placeholder="heading"
-                                        value="{{$records->heading ?? ''}} " placeholder="Enter heading" name="heading">
+                                    <label for="description">Description</label>
+                                    <textarea id="description" class="form-control" rows="3" name="description"
+                                              placeholder="Enter description">{{ $records->description ?? '' }}</textarea>
                                 </div>
 
+                                <!-- Heading -->
                                 <div class="form-group">
-                                    <label for="exampleInputFile">Upload Icon </label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" id="file-upload" name="image" />
-                                        </div>
+                                    <label for="heading">Heading</label>
+                                    <input type="text" id="heading" class="form-control" name="heading"
+                                           value="{{ $records->heading ?? '' }}" placeholder="Enter heading">
+                                </div>
+
+                                <!-- Image Upload -->
+                                <div class="form-group">
+                                    <label for="file-upload">Upload Icon</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="file-upload" name="image"
+                                               accept="image/*" onchange="previewImage(event)">
+                                        <label class="custom-file-label" for="file-upload">Choose file</label>
+                                    </div>
+
+                                    <!-- Preview -->
+                                    <div class="mt-3">
+                                        <img id="preview"
+                                             src="{{ isset($records->image) ? asset('upload/images/'.$records->image) : '' }}"
+                                             class="img-fluid img-thumbnail shadow-sm"
+                                             style="max-width:150px; height:auto; {{ isset($records->image) ? '' : 'display:none;' }}">
                                     </div>
                                 </div>
 
-
-
-                                @if($records)
-                                <img src="{{ asset('upload/images/'.$records->image) }}" width="150px"
-                                    height="70px"></img>
-                                @endif
-
-
                             </div>
-                            <!-- /.card-body -->
 
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                            <!-- Footer -->
+                            <div class="card-footer text-right">
+                                <button type="submit" class="btn btn-success px-4">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <a href="{{ url('GameCategoriesList') }}" class="btn btn-secondary px-4 ml-2">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </a>
                             </div>
                         </form>
-
-
-
-
 
                     </div>
                     <!-- /.card -->
 
-
-                    <!-- /.card -->
-
                 </div>
-                <!--/.col (left) -->
-                <!-- right column -->
-
-                <!--/.col (right) -->
             </div>
-            <!-- /.row -->
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-
-
-<!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-</aside>
-<!-- /.control-sidebar -->
 </div>
 
-<!-- ./wrapper -->
+<!-- Image Preview Script -->
+<script>
+    function previewImage(event) {
+        let preview = document.getElementById('preview');
+        preview.src = URL.createObjectURL(event.target.files[0]);
+        preview.style.display = "block";
+        preview.onload = function () {
+            URL.revokeObjectURL(preview.src);
+        }
+    }
+</script>
+
 @endsection

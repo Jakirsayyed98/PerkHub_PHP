@@ -1,307 +1,264 @@
 @extends('adminpanel.layout.main')
+
 @section('main-container')
 
-<!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+
+    <!-- Page Header -->
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
+            <div class="row mb-2 align-items-center">
                 <div class="col-sm-6">
-                    <h1>General Form</h1>
+                    <h1 class="m-0">Withdrawal Request Details</h1>
                 </div>
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">General Form</li>
+                    <ol class="breadcrumb float-sm-right mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
+                        <li class="breadcrumb-item active">Withdrawal Request</li>
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <section class="content">
         <div class="container-fluid">
+
             <div class="row">
-                <!-- left column -->
+                <!-- User Info -->
                 <div class="col-md-6">
-                    <!-- general form elements -->
-                    <div class="card card-primary">
-                        <div class="card-header">
+                    <div class="card shadow-sm border-primary">
+                        <div class="card-header bg-primary text-white">
                             <h3 class="card-title">User Information</h3>
                         </div>
-                        <!-- /.card-header -->
-                        <!-- form start -->
-                            <div class="card-body">
+                        <div class="card-body">
 
-                                <div class="row">
-                                    <!-- left column -->
-                                    <div class="col-md-6">
-
-
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">User Name</label>
-                                            <input type="hidden" name="id" value="{{$usermodel->user_id ?? '0'}}">
-                                            <input type="name" disabled class="form-control"
-                                                value="{{$usermodel->name ?? ''}}" name="name"
-                                                placeholder="Enter title">
-                                        </div>
-
-                                       
-
-
-                                    </div>
-                                    <!-- /.card-body -->
-                                    <!-- Right column -->
-                                    <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                            <label for="exampleInputEmail1">Mobile Number</label>
-                                            <input type="name" disabled class="form-control"
-                                                value="{{$usermodel->number ?? ''}}" name="number"
-                                                placeholder="Enter number">
-                                        </div>
+                                        <label>User Name</label>
+                                        <input type="hidden" name="id" value="{{ $usermodel->user_id ?? '0' }}">
+                                        <input type="text" disabled class="form-control"
+                                               value="{{ $usermodel->name ?? '' }}">
                                     </div>
-                                    <!-- /.card-body -->
-                                </div>
-                               
-                                
-                                <div class="row">
-                                    <!-- left column -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Verified</label>
-                                            <input type="hidden" name="id" value="{{$records->id ?? '0'}}">
-                                            <input type="name" disabled class="form-control"
-                                                value="₹{{$usermodel->verified ?? ''}}" name="name"
-                                                placeholder="Enter Amount">
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
-                                    <!-- Right column -->
-                                    <div class="col-md-6">
-                                    <div class="form-group">
-                                            <label for="exampleInputEmail1">Pending</label>
-                                            <input type="name" disabled class="form-control"
-                                                value="₹{{$usermodel->pending ?? ''}}" name="number"
-                                                placeholder="Enter Amount">
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
                                 </div>
 
-                                <div class="row">
-                                    <!-- left column -->
-                                    <div class="col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                            <label for="exampleInputEmail1">Rejected</label>
-                                            <input type="name" disabled class="form-control"
-                                                value="₹{{$usermodel->rejected ?? ''}}" name="number"
-                                                placeholder="Enter Amount">
-                                        </div>
+                                        <label>Mobile Number</label>
+                                        <input type="text" disabled class="form-control"
+                                               value="{{ $usermodel->mobile ?? '' }}">
                                     </div>
-                                    <!-- /.card-body -->
-                                    <!-- Right column -->
-                                    <div class="col-md-6">
-                                    <div class="form-group">
-                                            <label for="exampleInputEmail1">Withdrawal</label>
-                                            <input type="name" disabled class="form-control"
-                                                value="₹{{$usermodel->withdrawal ?? ''}}" name="number"
-                                                placeholder="Enter Amount">
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
                                 </div>
-                               
-
                             </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Verified</label>
+                                        <input type="text" disabled class="form-control"
+                                               value="₹{{ $approvedCashback ?? '0' }}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Pending</label>
+                                        <input type="text" disabled class="form-control"
+                                               value="₹{{ $pendingCashback ?? '0' }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Rejected</label>
+                                        <input type="text" disabled class="form-control"
+                                               value="₹{{ $rejectedCashback ?? '0' }}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Total Withdrawal</label>
+                                        <input type="text" disabled class="form-control"
+                                               value="₹{{ $withdrawalAmount ?? '0' }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-                <!--/.col (left) -->
-                <!-- right column -->
+
+                <!-- Withdrawal Info -->
                 <div class="col-md-6">
-                    <!-- general form elements -->
-                    <div class="card card-primary">
-                        <div class="card-header">
+                    <div class="card shadow-sm border-success">
+                        <div class="card-header bg-success text-white">
                             <h3 class="card-title">Withdrawal Request Info</h3>
                         </div>
-                        <!-- /.card-header -->
-                        <!-- form start -->
-                        <form action="withdrawalstatusupdateProcess" method="post" enctype="multipart/form-data">
-                        @csrf
+
+                        <form action="{{ url('withdrawalstatusupdateProcess') }}" method="post">
+                            @csrf
                             <div class="card-body">
 
                                 <div class="row">
-                                    <!-- left column -->
                                     <div class="col-md-6">
-
-
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">VPA ID</label>
-                                        
-                                            <input type="name" disabled class="form-control"
-                                                value="{{$records->VPA_Id ?? ''}}" name="VPA"
-                                                placeholder="Enter UPI">
-                                        </div>
-
-                                       
-
-
-                                    </div>
-                                    <!-- /.card-body -->
-                                    <!-- Right column -->
-                                    <div class="col-md-6">
-                                    <div class="form-group">
-                                            <label for="exampleInputEmail1">Requested withdrawal Amount</label>
-                                            <input type="name"  class="form-control"
-                                                value="₹{{$records->requested_withdrawal_amt ?? ''}}" name="withdrawala"
-                                                placeholder="Enter requested_withdrawal_amt" disabled>
+                                            <label>Method</label>
+                                            <input type="text" disabled class="form-control"
+                                                   value="{{ ucfirst($records->method) }}">
                                         </div>
                                     </div>
-                                    
-                                    <!-- /.card-body -->
-                                </div>
-                               
-                                
-                                <div class="row">
-                                    <!-- left column -->
-                                    <div class="col-md-6">
-                                    <div class="form-group">
-                                            <label for="exampleInputEmail1">Txn Id</label>
-                                            <input type="name"   class="form-control"
-                                                value="{{$records->txn_id ?? ''}}" name="txn_id"
-                                                placeholder="Enter txn_id">
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
-                                    <!-- Right column -->
-                                    <div class="col-md-6">
-                                    <div class="form-group">
-                                            <label for="exampleInputEmail1">message</label>
-                                            <input type="name" class="form-control"
-                                                value="{{$records->message ?? ''}}" name="message"
-                                                placeholder="Enter message">
-                                        </div>
-                                    </div>
-                                    <!-- /.card-body -->
-                                </div>
-
-                                <div class="row">
-                                    <!-- left column -->
-                                    
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">Txn Time</label>
-                                            <input type="hidden" name="user_id" value="{{$records->user_id ?? '0'}}">
-                                            <input type="hidden" name="withdrawalamount" value="{{$records->requested_withdrawal_amt ?? ''}}">
-                                            <input type="hidden" name="id" value="{{$records->id ?? '0'}}">
-                                            <input type="name"  class="form-control"
-                                                value="{{$records->txn_time ?? ''}}" name="txn_time"
-                                                placeholder="Enter txn_time">
+                                            <label>Account Details</label>
+                                            <input type="text" disabled class="form-control"
+                                                   value="{{ $records->account_details ?? '' }}">
                                         </div>
                                     </div>
-                                    <!-- /.card-body -->
-                                    <!-- Right column -->
+                                </div>
+
+                                @if($records->method == 'bank')
+                                <div class="row">
                                     <div class="col-md-6">
-                                    <div class="form-group">
-                                    <label>Select Status</label>
-                                    <select class="form-control select2" style="width: 100%;" name="withdrawal_status">
+                                        <div class="form-group">
+                                            <label>IFSC Code</label>
+                                            <input type="text" disabled class="form-control" name="ifsc_code"
+                                                   value="{{ $records->ifsc_code ?? '—' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
 
-                                        @if($records)
-                                        @if($records->status=="0")
-                                        <option value="0" selected="selected">Pending</option>
-                                        <option value="1">Completed</option>
-                                        <option value="2">Rejected</option>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Requested Amount</label>
+                                            <input type="hidden" name="requested_amount" value="{{ $records->amount ?? '' }}">
+                                            <input type="text" disabled class="form-control" name="requested_amount"
+                                                   value="₹{{ $records->amount ?? '' }}">
+                                        </div>
+                                    </div>
 
-                                        @elseif($records->status=="1")
-                                        <option value="0">Pending</option>
-                                        <option value="1" selected="selected">Completed</option>
-                                        <option value="2">Rejected</option>
-
-                                        @else
-                                        <option value="2" selected="selected">Rejected</option>
-                                        <option value="0">Pending</option>
-                                        <option value="1">Completed</option>
-                                        @endif
-
-                                        @else
-                                        <option value="3" selected="selected">Please select status type</option>
-                                        <option value="0">Pending</option>
-                                        <option value="1">Completed</option>
-                                        <option value="2">Rejected</option>
-                                        @endif
-
-                                    </select>
-
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Requested At</label>
+                                            <input type="text" disabled class="form-control"
+                                                   value="{{ $records->requested_at ? \Carbon\Carbon::parse($records->requested_at)->format('d M, Y h:i A') : '—' }}">
+                                        </div>
+                                    </div>
                                 </div>
 
-                                    <!-- /.card-body -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Txn ID</label>
+                                            <!-- <input type="hidden" name="txn_id" value="{{ $records->txn_id ?? '' }}"> -->
+
+                                            <input type="text" class="form-control"
+                                                   name="txn_id"
+                                                   value="{{ $records->txn_id ?? '' }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Processed At</label>
+                                            <input type="text" class="form-control"
+                                                   name="processed_at"
+                                                   value="{{ $records->processed_at ?? '' }}">
+                                        </div>
+                                    </div>
                                 </div>
-                               
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Admin Note</label>
+                                            <textarea class="form-control" name="admin_note" rows="2">{{ $records->admin_note ?? '' }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="hidden" name="id" value="{{ $records->id ?? '0' }}">
+                                        <input type="hidden" name="user_id" value="{{ $records->user_id ?? '0' }}">
+                                       <div class="form-group">
+    <label>Status</label>
+    <select class="form-control select2" name="withdrawal_status" style="width: 100%;">
+        <option value="pending"  {{ $records->status == "pending" ? 'selected' : '' }}>Pending</option>
+        <option value="approved" {{ $records->status == "approved" ? 'selected' : '' }}>Approved</option>
+        <option value="rejected" {{ $records->status == "rejected" ? 'selected' : '' }}>Rejected</option>
+    </select>
+</div>
+
+                                    </div>
+                                </div>
 
                             </div>
-                            <ol class="breadcrumb float-sm-right">
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                            <div class="card-footer text-right">
+                                <button type="submit" class="btn btn-success">Update Status</button>
                             </div>
-                            </ol>
-
                         </form>
                     </div>
                 </div>
-                <!--/.col (right) -->
             </div>
-            <!-- /.row -->
 
-
-            
-            <div class="card-body">
-                            <table id="example1" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Transaction Id</th>
-                                        <th>Sale Amount</th>
-                                        <th>Commission</th>
-                                        <th>User Commission</th>
-                                        <th>Status</th>
-                                    
-                                    </tr>
-                                </thead>
-                                
-                                <tbody>
-
-                                    @foreach($transaction as $item)
-
-                                    <tr>
-                                        <td>{{$item->id}}</td>
-                                        <td>{{$item->campaign_name}}</td>
-                                        <td>{{$item->transaction_id}}</td>
-                                        <td>₹{{$item->sale_amount}}</td>
-                                        <td>₹{{$item->affiliate_commission}}</td>
-                                        <td>₹{{$item->user_commission}}</td>
-
-                                        @if($item->status == '0')
-                                        <td>Pending</td>
-                                        @elseif($item->status == '1')
-                                        <td>Verified</td>
+            <!-- Transactions Table -->
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="card-title">User Transactions</h3>
+                </div>
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-hover table-striped text-center align-middle">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Transaction Id</th>
+                                <th>Sale Amount</th>
+                                <th>Commission</th>
+                                <th>User Commission</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($transaction as $item)
+                                <tr>
+                                    <td>{{ $item->id }}</td>
+                                    <td>{{ $item->store_name }}</td>
+                                    <td>{{ $item->order_id }}</td>
+                                    <td>₹{{ $item->order_amount }}</td>
+                                    <td>₹{{ $item->affiliate_commission }}</td>
+                                    <td>₹{{ $item->user_commission }}</td>
+                                    <td>
+                                        @if($item->status == 'pending')
+                                            <span class="badge bg-warning">Pending</span>
+                                        @elseif($item->status == 'approved')
+                                            <span class="badge bg-success">Verified</span>
                                         @else
-                                        <td>Rejected</td>
+                                            <span class="badge bg-danger">Rejected</span>
                                         @endif
-                                       </tr>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">No transactions found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                                    @endforeach
-
-                                </tbody>
-
-                            </table>
-                        </div>
-            
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
+
 @endsection

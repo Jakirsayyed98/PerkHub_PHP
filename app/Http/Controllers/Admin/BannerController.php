@@ -41,8 +41,6 @@ class BannerController extends Controller
             $banners->status = "0";
         }
         $banners->save();
-        
-        $banners = banners::where("banner_id",$req->banner_id)->get();
         return redirect('bannerlist?id='.$req->banner_id);
     }
 
@@ -73,7 +71,7 @@ class BannerController extends Controller
             $bannerRes->name = $name;
             $bannerRes->url = $url;
             $bannerRes->banner_category_id = $banner_category_id;
-            $banner->status = true;
+            $bannerRes->status = true;
             $bannerRes->save();
         }
         return redirect('bannerlist?id='.$req->banner_type);
