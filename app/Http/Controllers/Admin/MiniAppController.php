@@ -107,53 +107,42 @@ class MiniAppController extends Controller
     
     function updateProcessData(Request $req){
         $id = $req->id;
-        $name = $req->name;
-        $category_id = $req->category_id;
-        $url_type = $req->url_type;
-        $macro_publisher = $req->macro_publisher;
-        $cb_active = $req->cb_active;
-        $description = $req->description;
-        $url = $req->url;
-        $label = $req->label;
-        $cb_percentage = $req->cb_percentage;
-        $howitswork= $req->work;
-        $about = $req->about;
-        $cashback_terms = $req->cashback_terms;
         $data = Store::find($id);
-        if(is_null($data)){
-            $miniApp =new Store;
-        }else{
-            $miniApp = Store::find($id);
-        }
-        
-        // $miniApp->id = $id;
-        $miniApp->name = $name;
-        $miniApp->store_category_id = $category_id;
-        $miniApp->url_type = $url_type;
-        $miniApp->affiliate_provider_id  = $macro_publisher;
-        $miniApp->cd_active = $cb_active;
-        $miniApp->description = $description;
-        $miniApp->url = $url;
-        $miniApp->label = $label;
-        $miniApp->cashback = $cb_percentage;
-        $miniApp->how_its_work= $howitswork;
-        $miniApp->about_store =$about;
-        $miniApp->terms_and_conditions =$cashback_terms;
 
-        if($req->hasfile('icon')){
-            $miniApp->icon =$this->saveOnPath($req->file('icon'),"icon");
+        if (is_null($data)) {
+            $miniApp = new Store;
+        } else {
+            $miniApp = $data;
         }
 
-        if($req->hasfile('logo')){
-            $miniApp->logo =$this->saveOnPath($req->file('logo'),"logo");
+        $miniApp->name = $req->name;
+        $miniApp->store_category_id = $req->category_id;
+        $miniApp->url_type = $req->url_type;
+        $miniApp->affiliate_provider_id = $req->macro_publisher;
+        $miniApp->cb_active = $req->cb_active; // ✅ fixed (was cd_active)
+        $miniApp->description = $req->description;
+        $miniApp->url = $req->url;
+        $miniApp->label = $req->label;
+        $miniApp->cashback = $req->cb_percentage;
+        $miniApp->how_its_work = $req->work;
+        $miniApp->about_store = $req->about;
+        $miniApp->terms_and_conditions = $req->cashback_terms;
+
+        if ($req->hasFile('icon')) {
+            $miniApp->icon = $this->saveOnPath($req->file('icon'), "icon");
         }
 
-        if($req->hasfile('banner')){
-            $miniApp->banner = $this->saveOnPath($req->file('banner'),"banner");
+        if ($req->hasFile('logo')) {
+            $miniApp->logo = $this->saveOnPath($req->file('logo'), "logo");
         }
-        
+
+        if ($req->hasFile('banner')) {
+            $miniApp->banner = $this->saveOnPath($req->file('banner'), "banner");
+        }
+
         $miniApp->save();
-       return redirect('MiniAppList');
+
+        return redirect('MiniAppList');
     }
 
     function deleteMiniApp(Request $req){

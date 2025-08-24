@@ -69,6 +69,7 @@
                                                             <input type="hidden" name="banner_id" value="{{ $banner_id }}">
                                                             <input type="hidden" name="id" value="{{ $item->id }}">
 
+
                                                             <!-- Update -->
                                                             <button type="submit" formaction="AddAndUpdateBanner"
                                                                     class="btn btn-sm btn-info">

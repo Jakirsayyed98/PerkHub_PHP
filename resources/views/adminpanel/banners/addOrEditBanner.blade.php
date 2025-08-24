@@ -31,7 +31,7 @@
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fas fa-image"></i>
-                                {{ isset($records) ? 'Update Banner in Banner ' . ($records->banner_category_id ?? '') : 'Add New Banner' }}
+                                {{ isset($records) ? 'Update Banner in Banner ' . ($records->banner_id ?? '') : 'Add New Banner' }}
                             </h3>
                         </div>
 
@@ -41,11 +41,11 @@
 
                                 <!-- Hidden Fields -->
                                 <input type="hidden" name="id" value="{{ $records->id ?? '0' }}">
-                                <input type="hidden" name="banner_type" value="{{ $records->banner_category_id ?? '' }}">
+                                <input type="hidden" name="banner_type" value="{{ $bannerType ?? '0' }}">
 
                                 <!-- Name -->
                                 <div class="form-group">
-                                    <label for="bannerName">Banner Name <span class="text-danger">*</span></label>
+                                    <label for="bannerName">Banner Name {{ $bannerType }}<span class="text-danger">*</span></label>
                                     <input type="text" id="bannerName" class="form-control" name="name"
                                            value="{{ $records->name ?? '' }}" placeholder="Enter banner name" required>
                                 </div>

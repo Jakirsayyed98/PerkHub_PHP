@@ -139,31 +139,39 @@
                                            value="{{ $records->label ?? '' }}" placeholder="Enter label/tag">
                                 </div>
 
-                                <!-- Upload Fields -->
+                                <!-- Upload Icon -->
                                 <div class="form-group">
                                     <label>Upload Icon</label>
                                     <input type="file" name="icon" class="form-control-file" onchange="previewImage(this,'iconPreview')">
                                     <div class="mt-2">
-                                        <img id="iconPreview" src="{{ $records && $records->icon ? asset('upload/images/'.$records->icon) : '' }}" 
-                                             width="70" height="70" class="img-thumbnail" style="{{ isset($records->icon) ? '' : 'display:none;' }}">
+                                        <img id="iconPreview"
+                                             src="{{ !empty($records->icon) ? asset('upload/images/'.$records->icon) : '' }}"
+                                             width="70" height="70" class="img-thumbnail"
+                                             style="{{ !empty($records->icon) ? '' : 'display:none;' }}">
                                     </div>
                                 </div>
 
+                                <!-- Upload Logo -->
                                 <div class="form-group">
                                     <label>Upload Logo</label>
                                     <input type="file" name="logo" class="form-control-file" onchange="previewImage(this,'logoPreview')">
                                     <div class="mt-2">
-                                        <img id="logoPreview" src="{{ $records && $records->logo ? asset('upload/images/'.$records->logo) : '' }}" 
-                                             width="90" height="70" class="img-thumbnail" style="{{ isset($records->logo) ? '' : 'display:none;' }}">
+                                        <img id="logoPreview"
+                                             src="{{ !empty($records->logo) ? asset('upload/images/'.$records->logo) : '' }}"
+                                             width="90" height="70" class="img-thumbnail"
+                                             style="{{ !empty($records->logo) ? '' : 'display:none;' }}">
                                     </div>
                                 </div>
 
+                                <!-- Upload Banner -->
                                 <div class="form-group">
                                     <label>Upload Banner</label>
                                     <input type="file" name="banner" class="form-control-file" onchange="previewImage(this,'bannerPreview')">
                                     <div class="mt-2">
-                                        <img id="bannerPreview" src="{{ $records && $records->banner ? asset('upload/images/'.$records->banner) : '' }}" 
-                                             width="150" height="70" class="img-thumbnail" style="{{ isset($records->banner) ? '' : 'display:none;' }}">
+                                        <img id="bannerPreview"
+                                             src="{{ !empty($records->banner) ? asset('upload/images/'.$records->banner) : '' }}"
+                                             width="150" height="70" class="img-thumbnail"
+                                             style="{{ !empty($records->banner) ? '' : 'display:none;' }}">
                                     </div>
                                 </div>
 
