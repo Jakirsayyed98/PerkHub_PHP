@@ -66,7 +66,8 @@ class MiniAppCategoryController extends Controller
         $description = $req->description;
         $categories =new StoresCategories;
         $categories->name =$name;
-        $categories->homepage_visible = true;
+        $categories->homepage_visible = false;
+        $categories->status = true;
         $categories->description =$description;
         // $categories->heading =$heading;
        
